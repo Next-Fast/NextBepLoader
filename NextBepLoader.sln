@@ -14,8 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{12081C
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build", "build\Build.csproj", "{0C38DDF2-EAAA-43FA-BA0A-985636AC6040}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NextBepLoader.Desktop", "NextBepLoader.Desktop\NextBepLoader.Desktop.csproj", "{A046776E-BA96-4740-B6D4-BF11265FC174}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NextBepLoader.Android", "NextBepLoader.Android\NextBepLoader.Android.csproj", "{5AFAE79B-A8EC-401B-BA71-A8EE916A5E25}"
@@ -50,9 +48,6 @@ Global
 		PreRelease|Any CPU = PreRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0C38DDF2-EAAA-43FA-BA0A-985636AC6040}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C38DDF2-EAAA-43FA-BA0A-985636AC6040}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C38DDF2-EAAA-43FA-BA0A-985636AC6040}.PreRelease|Any CPU.ActiveCfg = PreRelease|Any CPU
 		{A046776E-BA96-4740-B6D4-BF11265FC174}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A046776E-BA96-4740-B6D4-BF11265FC174}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A046776E-BA96-4740-B6D4-BF11265FC174}.PreRelease|Any CPU.ActiveCfg = PreRelease|Any CPU
