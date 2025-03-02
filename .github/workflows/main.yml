@@ -6,6 +6,8 @@ on:
         paths:
             - '**/*.csproj'
             - '.github/workflows/main.yml'
+            - 'Directory.Build.props'
+
 jobs:
     build-Destop:
         runs-on: ubuntu-latest
