@@ -44,4 +44,4 @@ jobs:
             
             - name: Push to Nuget
               run: |
-                dotnet nuget push ./Output/Package/*.{nupkg,snupkg} -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGETKEY }}
+                dotnet nuget push ./Output/Package/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGETKEY }}
