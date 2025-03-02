@@ -32,14 +32,14 @@ jobs:
             - name: Build
               run: dotnet build -c PreRelease
             
-            - name: Upload Contnet
-              uses: actions/upload-artifact@v3
+            - name: Upload Build
+              uses: actions/upload-artifact@v4
               with:
-                  name: Desktop-Contnet
-                  path: ./Output/Contnet/
+                  name: Desktop-Build
+                  path: ./Output/Build/
             
             - name: Upload Package
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: Desktop-Package
                   path: ./Output/Package/

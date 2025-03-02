@@ -13,7 +13,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>logo.png</PackageIcon>
-        <OutDir>$(SolutionDir)Output\Contnet</OutDir>
+        <OutDir>$(SolutionDir)Output\Build</OutDir>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'PreRelease'">
