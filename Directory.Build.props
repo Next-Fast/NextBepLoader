@@ -16,10 +16,6 @@
         <OutDir>$(SolutionDir)Output\Build</OutDir>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'PreRelease'">
-        <VersionSuffix>dev-1</VersionSuffix>
-    </PropertyGroup>
-
     <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IncludeSymbols>true</IncludeSymbols>

@@ -2,12 +2,10 @@ name: CI
 
 on:
     push:
-        branches:
-            - Next
+        branches: [ Next ]
         paths:
-            - '.github/workflows/ci.yml'
-            - '*.csproj'
-            - '*.cs'
+            - '**/*.csproj'
+            - '.github/workflows/main.yml'
 jobs:
     build-Destop:
         runs-on: ubuntu-latest
@@ -30,7 +28,7 @@ jobs:
                   dotnet-version: 9.x
 
             - name: Build
-              run: dotnet build -c PreRelease
+              run: dotnet build -c PreRelease --version-suffix ci.${{ github.run_number }}
             
             - name: Upload Build
               uses: actions/upload-artifact@v4
@@ -47,4 +45,3 @@ jobs:
             - name: Push to Nuget
               run: |
                 dotnet nuget push ./Output/Package/*.{nupkg,snupkg} -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGETKEY }}
-
