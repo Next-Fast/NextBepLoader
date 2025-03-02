@@ -1,0 +1,50 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - Next
+        paths:
+            - '.github/workflows/ci.yml'
+            - '*.csproj'
+            - '*.cs'
+jobs:
+    build-Destop:
+        runs-on: ubuntu-latest
+        if: github.repository_owner == 'Next-Fast'
+        
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - uses: actions/cache@v3
+              with:
+                  path: ~/.nuget/packages
+                  key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nuget-
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v2
+              with:
+                  dotnet-version: 9.x
+
+            - name: Build
+              run: dotnet build -c PreRelease
+            
+            - name: Upload Contnet
+              uses: actions/upload-artifact@v3
+              with:
+                  name: Desktop-Contnet
+                  path: ./Output/Contnet/
+            
+            - name: Upload Package
+              uses: actions/upload-artifact@v3
+              with:
+                  name: Desktop-Package
+                  path: ./Output/Package/
+            
+            - name: Push to Nuget
+              run: |
+                dotnet nuget push ./Output/Package/*.{nupkg,snupkg} -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGETKEY }}
+
