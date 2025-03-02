@@ -13,15 +13,15 @@
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>logo.png</PackageIcon>
-        <OutDir>$(SolutionDir)Output\Build</OutDir>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <NoWarn>CS8618;NU5104</NoWarn>
         <PackageOutputPath>$(SolutionDir)Output\Package</PackageOutputPath>
+        <DebugType>pdbonly</DebugType>
     </PropertyGroup>
 
     <ItemGroup Condition="'$(Configuration)' != 'Debug'">
