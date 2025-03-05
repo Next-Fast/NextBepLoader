@@ -7,20 +7,28 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 
 namespace NextBepLoader.Deskstop;
 
-public class DesktopProviderManager(
-    IServiceProvider serviceProvider, 
-    DotNetLoader dotNetLoader) : IProviderManager, IOnLoadStart
+public sealed class DesktopProviderManager(
+    IServiceProvider serviceProvider,
+    DotNetLoader dotNetLoader
+    ) : IProviderManager, IOnLoadStart
 {
     public int Priority => 1;
     public IServiceProvider MainServiceProvider { get; } = serviceProvider;
     public List<IProvider> Providers => ProviderLoader.Providers;
     private ProviderLoader ProviderLoader { get; } = new(serviceProvider);
-    public void OnLoadStart()
+    public Task OnLoadStart()
     {
+        foreach (var provider in MainServiceProvider.GetServices<IProvider>())
+        {
+            ProviderLoader.AddProvider(provider);
+        }
+        
         ProviderLoader
               .LoadFormTypeLoader(dotNetLoader)
               .InitAll(this)
               .RunAll();
+        
+        return Task.CompletedTask;
     }
 
     public void OnGameActive()
@@ -41,15 +49,19 @@ public class DesktopProviderManager(
     public T? GetProvider<T>() where T : IProvider => (T?)Providers.FirstOrDefault(n => n is T);
 }
 
-public class ProviderLoader(IServiceProvider serviceProvider)
+internal class ProviderLoader(IServiceProvider serviceProvider)
 {
-    public readonly List<IProvider> Providers = 
-        [
-            ActivatorUtilities.CreateInstance<PluginLoadProvider>(serviceProvider)
-        ];
+    public readonly List<IProvider> Providers = [];
 
     private static readonly string BaseFullName = typeof(LoadProviderBase<>).FullName ?? "";
-    private static readonly string InterfaceFullName = typeof(IProvider).FullName ?? "";   
+    private static readonly string InterfaceFullName = typeof(IProvider).FullName ?? "";
+
+    public ProviderLoader AddProvider(IProvider provider)
+    {
+        Providers.Add(provider);
+        return this;
+    }
+    
     public ProviderLoader LoadFormTypeLoader(DotNetLoader loader)
     {
         var allFindProvider = new FastTypeFinder()

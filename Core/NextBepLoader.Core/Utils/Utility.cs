@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -23,7 +24,7 @@ public static class Utility
     ///     Whether current Common Language Runtime supports dynamic method generation using
     ///     <see cref="System.Reflection.Emit" /> namespace.
     /// </summary>
-    public static bool CLRSupportsDynamicAssemblies => CheckSre();
+    public static bool ClrSupportsDynamicAssemblies => CheckSre();
 
     /// <summary>
     ///     An encoding for UTF-8 which does not emit a byte order mark (BOM).
@@ -38,7 +39,7 @@ public static class Utility
                 return sreEnabled.Value;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            _ = new CustomAttributeBuilder(null, new object[0]);
+            _ = new CustomAttributeBuilder(null, []);
         }
         catch (PlatformNotSupportedException)
         {
@@ -169,6 +170,29 @@ public static class Utility
         }
     }
 
+    public static bool TryResolveUnmanagedAssembly(string directory, string assemblyName, Func<string, IntPtr> loader, out IntPtr ptr)
+    {
+        ptr = IntPtr.Zero;
+        
+        var dirs = GetAllDirectories(directory);
+        List<string> names = [$"{assemblyName}.dll", $"{assemblyName}.exe", $"{assemblyName}.so", $"{assemblyName}.dylib"];
+        foreach (var path in dirs.SelectMany(dir => names.Select(name => Path.Combine(dir, name)).Where(File.Exists)))
+        {
+            try
+            {
+                ptr = loader(path);
+            }
+            catch
+            {
+                continue;
+            }
+                
+            return true;
+        }
+
+        return false;
+    }
+
     /// <summary>
     ///     Try to resolve and load the given assembly DLL.
     /// </summary>
@@ -180,18 +204,13 @@ public static class Utility
     public static bool TryResolveDllAssembly<T>(AssemblyName? assemblyName,
                                                 string directory,
                                                 Func<string, T> loader,
-                                                out T? assembly) where T : class?
+                                                [MaybeNullWhen(false)]out T assembly) where T : class?
     {
         assembly = null;
 
-        var potentialDirectories = new List<string> { directory };
+        var dirs = GetAllDirectories(directory);
 
-        if (!Directory.Exists(directory))
-            return false;
-
-        potentialDirectories.AddRange(Directory.GetDirectories(directory, "*", SearchOption.AllDirectories));
-
-        foreach (var path in from subDirectory in potentialDirectories let potentialPaths = new[]
+        foreach (var path in from subDirectory in dirs let potentialPaths = new[]
                  {
                      $"{assemblyName?.Name}.dll",
                      $"{assemblyName?.Name}.exe"
@@ -201,7 +220,7 @@ public static class Utility
             {
                 assembly = loader(path);
             }
-            catch (Exception)
+            catch
             {
                 continue;
             }
@@ -210,6 +229,17 @@ public static class Utility
         }
 
         return false;
+    }
+
+    public static List<string> GetAllDirectories(string directory)
+    {
+        if (!Directory.Exists(directory))
+            return [];
+        
+        var dirs = new List<string> { directory };
+        dirs.AddRange(Directory.GetDirectories(directory, "*", SearchOption.AllDirectories));
+
+        return dirs;
     }
 
     /// <summary>
@@ -232,7 +262,7 @@ public static class Utility
     /// <param name="directory">Directory to search the assembly from.</param>
     /// <param name="assembly">The loaded assembly.</param>
     /// <returns>True, if the assembly was found and loaded. Otherwise, false.</returns>
-    public static bool TryResolveDllAssembly(AssemblyName? assemblyName, string directory, out Assembly? assembly) =>
+    public static bool TryResolveDllAssembly(AssemblyName? assemblyName, string directory,[MaybeNullWhen(false)] out Assembly assembly) =>
         TryResolveDllAssembly(assemblyName, directory, Assembly.LoadFrom, out assembly);
 
     /// <summary>
@@ -344,20 +374,6 @@ public static class Utility
     }
 
     /// <summary>
-    ///     Get a value of a command line argument
-    /// </summary>
-    /// <param name="arg">Argument name</param>
-    /// <returns>Next argument after the given argument name. If not found, returns null.</returns>
-    public static string? GetCommandLineArgValue(string arg)
-    {
-        var args = Environment.GetCommandLineArgs();
-        for (var i = 1; i < args.Length; i++)
-            if (args[i] == arg && i + 1 < args.Length)
-                return args[i + 1];
-        return null;
-    }
-
-    /// <summary>
     ///     Try to parse given string as an assembly name
     /// </summary>
     /// <param name="fullName">Fully qualified assembly name</param>
@@ -380,19 +396,6 @@ public static class Utility
             assemblyName = null;
             return false;
         }
-    }
-
-    public static void AddCecilPlatformAssemblies(this AppDomain appDomain, string assemblyDir)
-    {
-        if (!Directory.Exists(assemblyDir))
-            return;
-        // Cecil 0.11 requires one to manually set up list of trusted assemblies for assembly resolving
-        var curTrusted = appDomain.GetData(TRUSTED_PLATFORM_ASSEMBLIES) as string;
-        var addTrusted = string.Join(Path.PathSeparator.ToString(),
-                                     Directory.GetFiles(assemblyDir, "*.dll",
-                                                        SearchOption.TopDirectoryOnly));
-        var newTrusted = curTrusted == null ? addTrusted : $"{curTrusted}{Path.PathSeparator}{addTrusted}";
-        appDomain.SetData(TRUSTED_PLATFORM_ASSEMBLIES, newTrusted);
     }
 
     /// <summary>

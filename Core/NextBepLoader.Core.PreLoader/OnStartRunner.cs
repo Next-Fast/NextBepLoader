@@ -11,19 +11,22 @@ internal class OnStartRunner(ILogger<OnStartRunner> logger)
 {
     public void Run(IServiceProvider provider)
     {
-        try
+        Task.Run(async () =>
         {
-            var allStart = provider.GetServices<IOnLoadStart>().ToList();
-            allStart.Sort((x, y) => x.Priority.CompareTo(y.Priority));
-            foreach (var start in allStart)
+            try
             {
-                start.OnLoadStart();
-                logger.LogInformation($"On LoadStart:{start.GetType().Name}");
+                var allStart = provider.GetServices<IOnLoadStart>().ToList();
+                allStart.Sort((x, y) => x.Priority.CompareTo(y.Priority));
+                foreach (var start in allStart)
+                {
+                    await start.OnLoadStart();
+                    logger.LogInformation($"On LoadStart:{start.GetType().Name}");
+                }
             }
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "OnStartRunner error:\n {exception}", e.ToString());
-        }
+            catch (Exception e)
+            {
+                logger.LogError(e, "OnStartRunner error:\n {exception}", e.ToString());
+            }
+        });
     }
 }

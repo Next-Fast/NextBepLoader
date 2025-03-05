@@ -1,5 +1,6 @@
 using AsmResolver.DotNet;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NextBepLoader.Core;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
@@ -8,13 +9,12 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 
 namespace NextBepLoader.Deskstop;
 
-/*public class ServiceStartupLoadProvider : LoadProviderBase<IStartup>
+public class StartupLoadProvider(ILogger<StartupLoadProvider> logger, DotNetLoader dotNetLoader) : LoadProviderBase<IStartup>(dotNetLoader)
 {
     private NextServiceCollection? Service { get; set; }
 
     public override void Init(IProviderManager manager)
     {
-        base.Init(manager);
         
         Service = NextServiceManager.Instance.CreateService("PluginService");
         if (Service == null)
@@ -30,7 +30,14 @@ namespace NextBepLoader.Deskstop;
         base.Run();
         foreach (var startup in AllSelect)
         {
-            startup.ConfigureServices(Service);
+            try
+            {
+                startup.ConfigureServices(Service);
+            }
+            catch
+            {
+                logger.LogWarning("Startup configure service error");
+            }
         }
     }
 
@@ -51,4 +58,4 @@ namespace NextBepLoader.Deskstop;
             ?? 
             type.Interfaces.Any(n => n.Interface?.FullName.Equals(InterfaceFullName) ?? false);
     }
-}*/
+}

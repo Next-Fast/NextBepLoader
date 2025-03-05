@@ -1,35 +1,51 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NextBepLoader.Core;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
+using NextBepLoader.Core.PreLoader.Bootstrap;
 using NextBepLoader.Core.PreLoader.NextPreLoaders;
 
 namespace NextBepLoader.Deskstop;
 
-public class DesktopPreLoadManager(ILogger<DesktopPreLoadManager> logger, IServiceProvider provider, DesktopLoader loader) : IPreLoaderManager, IOnLoadStart
+public sealed class DesktopPreLoadManager(
+    ILogger<DesktopPreLoadManager> logger, 
+    IServiceProvider provider, 
+    DesktopLoader loader,
+    DotNetLoader dotNetLoader
+    ) : IPreLoaderManager, IOnLoadStart
 {
     public int Priority => 0;
     public List<BasePreLoader> PreLoaders { get; set; } = [];
-    private List<Type> LoaderTypes => loader.DefaultPreLoaderTypes;
 
     public T? GetPreLoader<T>() where T : BasePreLoader => PreLoaders.FirstOrDefault(n => n is T) as T;
     
-    public void OnLoadStart()
+    public async Task OnLoadStart()
     {
-        foreach (var preLoader in LoaderTypes.Select(type => ActivatorUtilities.CreateInstance(provider, type)))
+        PreLoaders.AddRange(provider.GetServices<BasePreLoader>());
+        
+        var findTypes = new FastTypeFinder()
+                        .FindFormTypeLoader(dotNetLoader, type => type.BaseType?.FullName == typeof(BasePreLoader).FullName)
+                        ._AllFindInfo.Select(n => n.AssemblyType);
+        
+        foreach (var preLoader in findTypes)
         {
-            if (preLoader is BasePreLoader basePreLoader)
+            try
             {
-                PreLoaders.Add(basePreLoader);
+                if (preLoader == null) continue;
+                if (ActivatorUtilities.CreateInstance(provider, preLoader) is not BasePreLoader instance) continue;
+                PreLoaders.Add(instance);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning("PreLoader:{name} Load Error\n {exception}", preLoader?.Name, e.ToString());
             }
         }
         
         PreLoaders.SortLoaders();
-        LoadPreLoad();
+        await LoadPreLoad();
     }
 
-    public void LoadPreLoad()
+    private Task LoadPreLoad()
     {
         foreach (var preLoader in PreLoaders)
         {
@@ -82,5 +98,7 @@ public class DesktopPreLoadManager(ILogger<DesktopPreLoadManager> logger, IServi
                                );
             }
         }
+
+        return Task.CompletedTask;
     }
 }

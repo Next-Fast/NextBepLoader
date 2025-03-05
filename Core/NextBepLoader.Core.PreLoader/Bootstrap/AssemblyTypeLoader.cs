@@ -89,6 +89,7 @@ public class DotNetLoader : BaseTypeLoader<DotNetLoader, TypeDefinition, Assembl
 
 public class AssemblyTypeLoader : BaseTypeLoader<AssemblyTypeLoader, Type, Assembly>
 {
+    
     public override AssemblyTypeLoader AddAssembly(Assembly assembly)
     {
         Assemblies.Add(assembly);

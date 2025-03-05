@@ -49,11 +49,12 @@ public class DesktopBepEnv : INextBepEnv, IOnLoadStart
     }
 
 
-    public void OnLoadStart()
+    public Task OnLoadStart()
     {
         CurrentProcess = Process.GetCurrentProcess();
 
         CurrentProcess.Exited += OnExit;
+        return Task.CompletedTask;
     }
 
     private  void OnExit(object? sender, EventArgs e)

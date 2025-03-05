@@ -6,7 +6,7 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 
 namespace NextBepLoader.Core.PreLoader;
 
-public class LoadProviderBase<TPlugin>: IProvider
+public abstract class LoadProviderBase<TPlugin>: IProvider
 {
     public static LoadProviderBase<TPlugin> Instance;
     public readonly DotNetLoader _DotNetLoader;
@@ -19,9 +19,7 @@ public class LoadProviderBase<TPlugin>: IProvider
         _DotNetLoader = loader;
     }
 
-    public virtual void Init(IProviderManager manager)
-    {
-    }
+    public abstract void Init(IProviderManager manager);
 
     public virtual void Run()
     {

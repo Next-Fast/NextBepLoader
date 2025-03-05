@@ -53,7 +53,6 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
     
 
     public ILogListener? DiskLogListener { get; private set; }
-    public List<Type> DefaultPreLoaderTypes = [];
     public readonly PreLoadEventArg PreLoadEventArg = new();
     public override void Start()
     {
@@ -74,18 +73,6 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
         {
             Logger.LogInfo("Load Type: " + definition.FullName);
         };
-        
-        DefaultPreLoaderTypes = [
-            typeof(ResolvePreLoad),
-            typeof(Cpp2ILStarter),
-            typeof(HashComputer),
-            typeof(IL2CPPHooker), 
-            typeof(UnityBasePreDownloader),
-            typeof(IL2CPPInteropStarter),
-            typeof(IL2CPPPreLoader)
-        ];
-        
-        Logger.LogInfo("Test");
 
         Collection = BuildService();
         MainServices = Collection.BuildOrCreateProvider();
@@ -103,6 +90,15 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
             .AddSingleton(this)
             .AddSingleton(UnityInfo.Instance)
             .AddSingleton<PluginInfoManager>()
+            .AddSingleton<BasePreLoader, ResolvePreLoad>()
+            .AddSingleton<BasePreLoader, Cpp2ILStarter>()
+            .AddSingleton<BasePreLoader, HashComputer>()
+            .AddSingleton<BasePreLoader, IL2CPPHooker>()
+            .AddSingleton<BasePreLoader, UnityBasePreDownloader>()
+            .AddSingleton<BasePreLoader, IL2CPPInteropStarter>()
+            .AddSingleton<BasePreLoader, IL2CPPPreLoader>()
+            .AddSingleton<IProvider, PluginLoadProvider>()
+            .AddSingleton<IProvider, StartupLoadProvider>()
             .SingleService<INextBepEnv, DesktopBepEnv>()
             .SingleService<IProviderManager, DesktopProviderManager>()
             .SingleService<IPreLoaderManager, DesktopPreLoadManager>()
