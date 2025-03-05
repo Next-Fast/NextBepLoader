@@ -9,8 +9,7 @@ namespace NextBepLoader.Core.PreLoader;
 
 internal class OnStartRunner(ILogger<OnStartRunner> logger)
 {
-    public void Run(IServiceProvider provider)
-    {
+    public void Run(IServiceProvider provider) =>
         Task.Run(async () =>
         {
             try
@@ -28,5 +27,4 @@ internal class OnStartRunner(ILogger<OnStartRunner> logger)
                 logger.LogError(e, "OnStartRunner error:\n {exception}", e.ToString());
             }
         });
-    }
 }

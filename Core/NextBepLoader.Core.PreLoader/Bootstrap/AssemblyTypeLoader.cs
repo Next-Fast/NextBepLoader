@@ -8,29 +8,30 @@ using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core.PreLoader.Bootstrap;
 
-public abstract class BaseTypeLoader<TLoader, TType, TAssembly> where TAssembly : notnull where TLoader : BaseTypeLoader<TLoader, TType, TAssembly>
+public abstract class BaseTypeLoader<TLoader, TType, TAssembly>
+    where TAssembly : notnull where TLoader : BaseTypeLoader<TLoader, TType, TAssembly>
 {
-    public List<TAssembly> Assemblies { get; set; } = [];
     public Dictionary<TAssembly, List<TType>> _LoadTypes = [];
+    public List<TAssembly> Assemblies { get; set; } = [];
     public Action<TType, TAssembly>? OnLoadType { get; set; } = null;
     public Func<TType, bool>? TypeFilter { get; set; } = null;
     public Func<TAssembly, bool>? AssemblyFilter { get; set; } = null;
-    
+
     public virtual TLoader AddAssembly(TAssembly assembly)
     {
         Assemblies.Add(assembly);
         return (TLoader)this;
     }
-    
+
     public virtual TLoader AddAssemblies(IEnumerable<TAssembly> assemblies)
     {
         Assemblies.AddRange(assemblies);
         return (TLoader)this;
     }
-    
-    
+
+
     public abstract TLoader AddAssemblyFormPath(string path);
-    
+
     public abstract TLoader AddAssemblyFormBytes(byte[] bytes);
 
     public virtual TLoader AddAssembliesFormDirector(DirectoryInfo directory)
@@ -40,10 +41,7 @@ public abstract class BaseTypeLoader<TLoader, TType, TAssembly> where TAssembly 
         return (TLoader)this;
     }
 
-    public virtual TLoader AddAssembliesFormDirector(string path)
-    {
-        return AddAssembliesFormDirector(new DirectoryInfo(path));
-    }
+    public virtual TLoader AddAssembliesFormDirector(string path) => AddAssembliesFormDirector(new DirectoryInfo(path));
 
     public virtual TLoader LoadTypes()
     {
@@ -81,15 +79,12 @@ public class DotNetLoader : BaseTypeLoader<DotNetLoader, TypeDefinition, Assembl
         return this;
     }
 
-    public override List<TypeDefinition> LoadTypeFormAssembly(AssemblyDefinition assembly)
-    {
-        return assembly.ManifestModule?.GetAllTypes().ToList() ?? [];
-    }
+    public override List<TypeDefinition> LoadTypeFormAssembly(AssemblyDefinition assembly) =>
+        assembly.ManifestModule?.GetAllTypes().ToList() ?? [];
 }
 
 public class AssemblyTypeLoader : BaseTypeLoader<AssemblyTypeLoader, Type, Assembly>
 {
-    
     public override AssemblyTypeLoader AddAssembly(Assembly assembly)
     {
         Assemblies.Add(assembly);
@@ -107,7 +102,7 @@ public class AssemblyTypeLoader : BaseTypeLoader<AssemblyTypeLoader, Type, Assem
         Assemblies.Add(Assembly.LoadFile(path));
         return this;
     }
-    
+
 
     public override AssemblyTypeLoader AddAssemblyFormBytes(byte[] bytes)
     {
@@ -116,8 +111,5 @@ public class AssemblyTypeLoader : BaseTypeLoader<AssemblyTypeLoader, Type, Assem
     }
 
 
-    public override List<Type> LoadTypeFormAssembly(Assembly assembly)
-    {
-        return assembly.GetTypes().ToList();
-    }
+    public override List<Type> LoadTypeFormAssembly(Assembly assembly) => assembly.GetTypes().ToList();
 }

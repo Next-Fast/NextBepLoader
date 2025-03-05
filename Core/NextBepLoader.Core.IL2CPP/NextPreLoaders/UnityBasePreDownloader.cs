@@ -1,20 +1,17 @@
 using System;
 using System.IO.Compression;
 using System.Net.Http;
-using System.Text;
 using Microsoft.Extensions.Logging;
-using NextBepLoader.Core.Configuration;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
 public class UnityBasePreDownloader(
-    HttpClient client, 
+    HttpClient client,
     ILogger<UnityBasePreDownloader> logger,
-    INextBepEnv env, 
-    UnityInfo unityInfo
-    ) : BasePreLoader
+    INextBepEnv env,
+    UnityInfo unityInfo) : BasePreLoader
 {
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];
 
@@ -26,12 +23,14 @@ public class UnityBasePreDownloader(
                                                                                                           .AppendLine("The base libraries are used by Il2CppInterop to generate interop assemblies.")
                                                                                                           .AppendLine("The URL can include {VERSION} template which will be replaced with the game's Unity engine version.")
                                                                                                           .ToString());*/
-    
+
     public override async void PreLoad(PreLoadEventArg arg)
     {
         if (!env.GetOrCreateEventArgs<IL2CPPCheckEventArg>().DownloadUnityBaseLib) return;
         var unityVersion = unityInfo.GetVersion();
-        var source = "https://unity.bepinex.dev/libraries/{VERSION}.zip".Replace("{VERSION}", $"{unityVersion.Major}.{unityVersion.Minor}.{unityVersion.Build}");
+        var source =
+            "https://unity.bepinex.dev/libraries/{VERSION}.zip".Replace("{VERSION}",
+                                                                        $"{unityVersion.Major}.{unityVersion.Minor}.{unityVersion.Build}");
         logger.LogInformation("Unity Base Lib Download Source: {source}", source);
 
         if (string.IsNullOrEmpty(source)) return;

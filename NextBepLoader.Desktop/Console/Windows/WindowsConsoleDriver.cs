@@ -1,7 +1,6 @@
 using System.Reflection;
 using HarmonyLib;
 using Microsoft.Win32.SafeHandles;
-using NextBepLoader.Core;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Utils;
 
@@ -60,10 +59,10 @@ internal class WindowsConsoleDriver : IConsoleDivider
     }
 
     public TextWriter StandardOut { get; private set; }
-    public TextWriter? ConsoleOut { get; private set; }
 
     public bool ConsoleActive { get; private set; }
-    
+    public TextWriter? ConsoleOut { get; private set; }
+
 
     public void CreateConsole(uint codepage)
     {
@@ -98,8 +97,6 @@ internal class WindowsConsoleDriver : IConsoleDivider
         ConsoleActive = true;
     }
 
-    public static void PreventClose() => ConsoleWindow.PreventClose();
-
     public void DetachConsole()
     {
         ConsoleWindow.Detach();
@@ -126,6 +123,8 @@ internal class WindowsConsoleDriver : IConsoleDivider
 
     public void SetConsoleTitle(string title) => ConsoleWindow.Title = title;
 
+    public static void PreventClose() => ConsoleWindow.PreventClose();
+
     private static Stream OpenFileStream(IntPtr handle)
     {
         if (CoreUtils.IsCore)
@@ -145,8 +144,7 @@ internal class WindowsConsoleDriver : IConsoleDivider
         return (FileStream)Activator.CreateInstance(typeof(FileStream), ctorParams)!;
     }
 
-    private IntPtr GetOutHandle()
-    {
+    private IntPtr GetOutHandle() =>
         /*switch (ConsoleManager.ConfigConsoleOutRedirectType.Value)
         {
             case ConsoleManager.ConsoleOutRedirectType.ConsoleOut:
@@ -159,8 +157,7 @@ internal class WindowsConsoleDriver : IConsoleDivider
                            ? ConsoleWindow.OriginalStdoutHandle
                            : ConsoleWindow.ConsoleOutHandle;
         }*/
-        return ConsoleWindow.OriginalStdoutHandle != IntPtr.Zero
-                   ? ConsoleWindow.OriginalStdoutHandle
-                   : ConsoleWindow.ConsoleOutHandle;
-    }
+        ConsoleWindow.OriginalStdoutHandle != IntPtr.Zero
+            ? ConsoleWindow.OriginalStdoutHandle
+            : ConsoleWindow.ConsoleOutHandle;
 }

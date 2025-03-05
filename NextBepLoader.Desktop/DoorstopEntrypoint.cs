@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using MonoMod.Utils;
-using NextBepLoader.Core;
 using NextBepLoader.Core.Utils;
 using NextBepLoader.Deskstop;
 using NextBepLoader.Deskstop.Utils;
@@ -19,24 +18,22 @@ internal static class Entrypoint
         var silentExceptionLog = Environment.GetEnvironmentVariable("BEPINEX_PRELOADER_LOG") ??
                                  $"preloader_{DateTime.Now:yyyyMMdd_HHmmss_fff}.log";
         Mutex? mutex = null;
-        
+
         try
         {
-            EnvVars.LoadVars(); 
+            EnvVars.LoadVars();
             silentExceptionLog =
                 Path.Combine(Path.GetDirectoryName(EnvVars.DOORSTOP_PROCESS_PATH)!, silentExceptionLog);
 
-            var mutexId = Utility.HashStrings(Process.GetCurrentProcess().ProcessName, EnvVars.DOORSTOP_PROCESS_PATH ?? string.Empty,
+            var mutexId = Utility.HashStrings(Process.GetCurrentProcess().ProcessName,
+                                              EnvVars.DOORSTOP_PROCESS_PATH ?? string.Empty,
                                               typeof(Entrypoint).FullName ?? string.Empty);
 
             mutex = new Mutex(false, $"Global\\{mutexId}");
             mutex.WaitOne();
 
             if (!DesktopLoader.TryCreateLoader(out var message))
-            {
-                
                 throw new Exception("Loader Create Load Error:\n" + message);
-            }
         }
         catch (Exception ex)
         {

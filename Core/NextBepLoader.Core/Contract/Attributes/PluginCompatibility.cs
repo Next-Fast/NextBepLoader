@@ -9,7 +9,7 @@ namespace NextBepLoader.Core.Contract.Attributes;
 ///     This attribute specifies other plugins that are incompatible with this plugin.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class PluginCompatibility : Attribute/*, ICacheable*/
+public class PluginCompatibility : Attribute /*, ICacheable*/
 {
     /// <summary>
     ///     Marks this <see cref="BaseUnityPlugin" /> as incompatible with another plugin.

@@ -6,24 +6,23 @@ namespace NextBepLoader.Core.IL2CPP.Utils;
 
 public class ManagerLookup(string fileName, params int[] lookupOffsets)
 {
-    
+    public bool Looked;
+
     public string FileRootPath { get; set; }
     public string FileName { get; } = fileName;
     public string FilePath => Path.Combine(FileRootPath, FileName);
     public int[] LookupOffsets { get; } = lookupOffsets;
 
     public UnityVersion? LookupVersion { get; private set; }
-    
-    public string? Engine { get; private set; }
 
-    public bool Looked = false;
+    public string? Engine { get; private set; }
 
     public ManagerLookup SetFileRootPath(string path)
     {
         FileRootPath = path;
         return this;
     }
-    
+
     public bool TryLookup()
     {
         if (!File.Exists(FilePath))
@@ -40,14 +39,16 @@ public class ManagerLookup(string fileName, params int[] lookupOffsets)
                 sb.Append((char)b);
 
             if (!UnityVersion.TryParse(sb.ToString(), out var lookupVersion, out var engine)) continue;
-            
+
             LookupVersion = lookupVersion;
             Engine = engine;
             Looked = true;
             return true;
         }
+
         return false;
     }
 
-    public static explicit operator UnityVersion(ManagerLookup lookup) => lookup.LookupVersion ?? UnityVersion.MinVersion;
+    public static explicit operator UnityVersion(ManagerLookup lookup) =>
+        lookup.LookupVersion ?? UnityVersion.MinVersion;
 }

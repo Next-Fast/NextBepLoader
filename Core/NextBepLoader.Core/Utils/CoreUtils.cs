@@ -30,12 +30,12 @@ public static class CoreUtils
 
     public static T? AsDelegate<T>(this IntPtr s) where T : class =>
         Marshal.GetDelegateForFunctionPointer(s, typeof(T)) as T;
-    
+
     private static string PlatformGameAssemblyNameGet()
     {
         if (PlatformDetection.OS.Is(OSKind.Android))
             return "libil2cpp";
-        
+
         return "GameAssembly";
     }
 
@@ -43,7 +43,7 @@ public static class CoreUtils
     {
         if (PlatformDetection.OS.Is(OSKind.Android))
             return "so";
-        
+
         if (PlatformDetection.OS.Is(OSKind.OSX))
             return "dylib";
 
@@ -65,36 +65,34 @@ public static class CoreUtils
     public static IServiceCollection AddOnStart<T>(this IServiceCollection collection) where T : class, IOnLoadStart =>
         collection.AddSingleton<IOnLoadStart, T>();
 
-    public static IServiceCollection AddOnStart<TInterface, TClass>(this IServiceCollection collection) where TClass : class, TInterface, IOnLoadStart where TInterface : class
-    {
-        return collection.AddSingleton<TInterface, TClass>()
+    public static IServiceCollection AddOnStart<TInterface, TClass>(this IServiceCollection collection)
+        where TClass : class, TInterface, IOnLoadStart where TInterface : class =>
+        collection.AddSingleton<TInterface, TClass>()
                   .AddSingleton<IOnLoadStart>(n => n.GetRequiredService<TClass>());
-    }
 
-    public static IServiceCollection AddOnStart<TInterface, TClass>
-    (
-        this IServiceCollection collection, 
-        params object[] parameters
-        )
-        where TClass : class, TInterface, IOnLoadStart 
+    public static IServiceCollection AddOnStart<TInterface, TClass>(this IServiceCollection collection,
+                                                                    params object[] parameters)
+        where TClass : class, TInterface, IOnLoadStart
         where TInterface : class
         => collection
-           .AddSingleton<TInterface, TClass>(provider => ActivatorUtilities.CreateInstance<TClass>(provider, parameters))
+           .AddSingleton<TInterface,
+               TClass>(provider => ActivatorUtilities.CreateInstance<TClass>(provider, parameters))
            .AddOnStartFormGet<TClass>();
-    
-    public static IServiceCollection AddOnStartFormGet<T>(this IServiceCollection collection) where T : class, IOnLoadStart =>
+
+    public static IServiceCollection AddOnStartFormGet<T>(this IServiceCollection collection)
+        where T : class, IOnLoadStart =>
         collection.AddSingleton<IOnLoadStart>(n => n.GetRequiredService<T>());
 
     public static void DeleteAllFiles(string dir)
     {
         if (!Directory.Exists(dir))
             return;
-        
+
         Directory
             .GetFiles(dir)
             .Do(File.Delete);
     }
-    
+
     public static void HashString(this ICryptoTransform hash, string str)
     {
         var buffer = Encoding.UTF8.GetBytes(str);
@@ -118,7 +116,7 @@ public static class CoreUtils
         item = create();
         list.Add(item);
 
-        return item;        
+        return item;
     }
 
     public static bool GetAndSet<T>(this List<T> list, Func<T, bool> predicate, Action<T> set)
@@ -129,7 +127,8 @@ public static class CoreUtils
         return true;
     }
 
-    public static bool TryGet<T>(this List<T> list, Func<T, bool> predicate,[MaybeNullWhen(false)] out T item) where T : class
+    public static bool TryGet<T>(this List<T> list, Func<T, bool> predicate, [MaybeNullWhen(false)] out T item)
+        where T : class
     {
         item = list.FirstOrDefault(predicate);
         return item is not null;
@@ -140,22 +139,22 @@ public static class CoreUtils
     public static bool HasBase(this Type type, Type baseType)
     {
         if (type.BaseType == null) return false;
-        
-        return 
-            type.BaseType == baseType 
-            || 
+
+        return
+            type.BaseType == baseType
+          ||
             type.BaseType.HasBase(baseType);
     }
-    
+
     public static bool HasBase<T>(this TypeDefinition type) => type.HasBase(typeof(T));
 
     public static bool HasBase(this TypeDefinition? type, Type baseType)
     {
         if (type?.BaseType == null) return false;
-        
-        return 
-            type.BaseType.FullName == baseType.FullName 
-         || 
+
+        return
+            type.BaseType.FullName == baseType.FullName
+          ||
             type.BaseType.Resolve().HasBase(baseType);
     }
 
@@ -177,12 +176,13 @@ public static class CoreUtils
         return provider;
     }
 
-    public static IServiceCollection SingleService<TInterface, TClass>(this IServiceCollection collection) where TClass : class, TInterface where TInterface : class
+    public static IServiceCollection SingleService<TInterface, TClass>(this IServiceCollection collection)
+        where TClass : class, TInterface where TInterface : class
     {
         collection
             .AddSingleton<TClass>()
             .AddSingleton<TInterface, TClass>(provider => provider.GetRequiredService<TClass>());
-        
+
         return collection;
     }
 }

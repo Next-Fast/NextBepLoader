@@ -31,7 +31,7 @@ public class IL2CPPUnityLogSource : ILogSource
             LogType.Warning   => LogLevel.Warning,
             LogType.Log       => LogLevel.Message,
             LogType.Exception => LogLevel.Error,
-            _                 => LogLevel.Message
+            var _             => LogLevel.Message
         };
         LogEvent(this, new LogEventArgs(logLine, level, this));
     }

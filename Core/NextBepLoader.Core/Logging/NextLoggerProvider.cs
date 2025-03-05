@@ -5,6 +5,7 @@ using NextBepLoader.Core.Logging.Interface;
 using MicrosoftLogging = Microsoft.Extensions.Logging;
 
 namespace NextBepLoader.Core.Logging;
+
 public class NextLoggerProvider : MicrosoftLogging.ILoggerProvider
 {
     private readonly List<NextLogger> loggers = [];
@@ -37,22 +38,18 @@ public class NextLoggerProvider : MicrosoftLogging.ILoggerProvider
                 logLine += $"\nException: {exception}";
 
             LogEvent.Invoke(this, new LogEventArgs(logLine, MSLogLevelTo(logLevel),
-                                                    this));
+                                                   this));
         }
 
         public bool IsEnabled(MicrosoftLogging.LogLevel logLevel) => Logger.Sources.Contains(this);
 
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => new EmptyScope();
-        private class EmptyScope : IDisposable
-        {
-            public void Dispose() { }
-        }
 
         public void Dispose() => Logger.Sources.Remove(this);
 
         public string SourceName { get; } = name;
         public event EventHandler<LogEventArgs> LogEvent;
-        
+
         private static LogLevel MSLogLevelTo(MicrosoftLogging.LogLevel logLevel) => logLevel switch
         {
             MicrosoftLogging.LogLevel.Trace => LogLevel.Debug,
@@ -62,7 +59,12 @@ public class NextLoggerProvider : MicrosoftLogging.ILoggerProvider
             MicrosoftLogging.LogLevel.Error => LogLevel.Error,
             MicrosoftLogging.LogLevel.Critical => LogLevel.Fatal,
             MicrosoftLogging.LogLevel.None => LogLevel.None,
-            var _                           => throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null)
+            var _ => throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null)
         };
+
+        private class EmptyScope : IDisposable
+        {
+            public void Dispose() { }
+        }
     }
 }

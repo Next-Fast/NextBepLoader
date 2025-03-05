@@ -9,7 +9,7 @@ using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Windows;
 
-internal static partial class ConsoleWindow
+internal static class ConsoleWindow
 {
     private const int STD_OUTPUT_HANDLE = -11;
     private const uint SC_CLOSE = 0xF060;

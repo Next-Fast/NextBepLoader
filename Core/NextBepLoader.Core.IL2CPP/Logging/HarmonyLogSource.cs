@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using NextBepLoader.Core.Configuration;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Logging.Interface;
 using HarmonyLogger = HarmonyLib.Tools.Logger;

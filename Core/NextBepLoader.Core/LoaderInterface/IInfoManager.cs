@@ -1,6 +1,3 @@
 namespace NextBepLoader.Core.LoaderInterface;
 
-public interface IInfoManager
-{
-    
-}
+public interface IInfoManager { }

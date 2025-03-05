@@ -16,10 +16,7 @@ public class ManagedIl2CppEnumerator(IEnumerator enumerator) : System.Collection
                                                         ?.CreateDelegate<Action<IEnumerator>>();
 
     private readonly IEnumerator enumerator = enumerator ?? throw new ArgumentNullException(nameof(enumerator));
-
     public bool MoveNext() => moveNext?.Invoke(enumerator) ?? false;
-
     public void Reset() => reset?.Invoke(enumerator);
-
     public object Current => enumerator.Current;
 }

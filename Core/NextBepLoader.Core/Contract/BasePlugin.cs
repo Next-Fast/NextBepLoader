@@ -13,7 +13,7 @@ public abstract class BasePlugin : INextPlugin
     public ConfigFile Config { get; }
 
     public abstract void Load();
-    
+
 
     public virtual bool Unload() => false;
 

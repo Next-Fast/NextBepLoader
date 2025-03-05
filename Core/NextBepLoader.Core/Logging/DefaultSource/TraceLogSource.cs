@@ -91,7 +91,7 @@ public class TraceLogSource : TraceListener
             TraceEventType.Error       => LogLevel.Error,
             TraceEventType.Warning     => LogLevel.Warning,
             TraceEventType.Information => LogLevel.Info,
-            _                          => LogLevel.Debug
+            var _                      => LogLevel.Debug
         };
         LogSource.Log(level, $"{message ?? string.Empty}".Trim());
     }

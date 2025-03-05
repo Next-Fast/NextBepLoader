@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices;
 using MonoMod.Utils;
-using NextBepLoader.Core;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Utils;
@@ -10,13 +9,11 @@ internal static class PlatformUtils
 {
     public static Version WindowsVersion { get; set; }
     public static string WineVersion { get; set; }
-
     public static string LinuxKernelVersion { get; set; }
 
     [DllImport("libc.so.6", EntryPoint = "uname", CallingConvention = CallingConvention.Cdecl,
                CharSet = CharSet.Ansi)]
     private static extern IntPtr uname_linux(ref utsname_linux utsname);
-
 
     [DllImport("ntdll.dll", SetLastError = true)]
     private static extern bool RtlGetVersion(ref WindowsOSVersionInfoExW versionInfo);
@@ -81,7 +78,6 @@ internal static class PlatformUtils
         public byte wProductType = 0;
         public byte wReserved = 0;
     }
-
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct utsname_linux

@@ -1,5 +1,4 @@
 using HarmonyLib;
-using NextBepLoader.Core.Configuration;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
 
@@ -35,10 +34,41 @@ internal class LinuxConsoleDriver : IConsoleDivider
     public TtyInfo TtyInfo { get; private set; }
 
     public TextWriter? StandardOut { get; private set; }
-    public TextWriter? ConsoleOut { get; private set; }
 
     public bool ConsoleActive { get; private set; }
     public bool ConsoleIsExternal => false;
+    public TextWriter? ConsoleOut { get; private set; }
+
+    public void CreateConsole(uint codepage) =>
+        Logger.Log(LogLevel.Warning, "An external console currently cannot be spawned on a Unix platform.");
+
+    public void DetachConsole() =>
+        throw new PlatformNotSupportedException("Cannot detach console on a Unix platform");
+
+    public void SetConsoleColor(ConsoleColor color)
+    {
+        if (StdoutRedirected)
+            return;
+
+        if (UseMonoTtyDriver)
+            // Use mono's inbuilt terminfo driver to set the foreground color for us
+            SafeConsole.ForegroundColor = color;
+        else
+            ConsoleOut?.Write(TtyInfo.GetAnsiCode(color));
+    }
+
+    public void WriteConsoleLine(string message, ConsoleColor color) => throw new NotImplementedException();
+
+    public void SetConsoleTitle(string title)
+    {
+        if (StdoutRedirected)
+            return;
+
+        if (UseMonoTtyDriver && SafeConsole.TitleExists)
+            SafeConsole.Title = title;
+        else
+            ConsoleOut?.Write($"\u001B]2;{title.Replace("\\", "\\\\")}\u0007");
+    }
 
     public void PreventClose()
     {
@@ -79,39 +109,5 @@ internal class LinuxConsoleDriver : IConsoleDivider
         }
 
         ConsoleOut = StandardOut;
-    }
-
-    public void CreateConsole(uint codepage) =>
-        Logger.Log(LogLevel.Warning, "An external console currently cannot be spawned on a Unix platform.");
-
-    public void DetachConsole() =>
-        throw new PlatformNotSupportedException("Cannot detach console on a Unix platform");
-
-    public void SetConsoleColor(ConsoleColor color)
-    {
-        if (StdoutRedirected)
-            return;
-
-        if (UseMonoTtyDriver)
-            // Use mono's inbuilt terminfo driver to set the foreground color for us
-            SafeConsole.ForegroundColor = color;
-        else
-            ConsoleOut?.Write(TtyInfo.GetAnsiCode(color));
-    }
-
-    public void WriteConsoleLine(string message, ConsoleColor color)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetConsoleTitle(string title)
-    {
-        if (StdoutRedirected)
-            return;
-
-        if (UseMonoTtyDriver && SafeConsole.TitleExists)
-            SafeConsole.Title = title;
-        else
-            ConsoleOut?.Write($"\u001B]2;{title.Replace("\\", "\\\\")}\u0007");
     }
 }

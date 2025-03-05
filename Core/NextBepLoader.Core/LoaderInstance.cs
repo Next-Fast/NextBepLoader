@@ -24,7 +24,6 @@ public static class LoaderInstance
         ManagerRegister.GetOrCreateCurrent<T>();
 }
 
-
 public class InstanceRegister<T>
 {
     private readonly List<T> instances = [];
@@ -43,12 +42,9 @@ public class InstanceRegister<T>
         Current = instance;
     }
 
-    public void RegisterCurrent(T instance)
-    {
-        Current = instance;
-    }
+    public void RegisterCurrent(T instance) => Current = instance;
 
-    public bool TryGet<TGet>([MaybeNullWhen(false)]out TGet result) where TGet : class, T
+    public bool TryGet<TGet>([MaybeNullWhen(false)] out TGet result) where TGet : class, T
     {
         result = null;
         var instance = instances.FirstOrDefault(n => n is TGet);

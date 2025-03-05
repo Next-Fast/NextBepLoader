@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NextBepLoader.Core.Contract.Attributes;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Utils;
 
@@ -22,7 +21,6 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
     /// <param name="ownerMetadata">Information about the plugin that owns this setting file.</param>
     public ConfigFile(string configPath, bool saveOnInit)
     {
-
         if (configPath == null) throw new ArgumentNullException(nameof(configPath));
         configPath = Path.GetFullPath(configPath);
         ConfigFilePath = configPath;
@@ -288,7 +286,7 @@ public class ConfigFile : IDictionary<ConfigDefinition, ConfigEntryBase>
             }*/
 
             var allConfigEntries = Entries
-                                   .Select(x => new 
+                                   .Select(x => new
                                    {
                                        x.Key, entry = x.Value, value = x.Value.GetSerializedValue()
                                    })

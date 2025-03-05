@@ -1,7 +1,6 @@
 using System;
 using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.LoaderInterface;
-using NextBepLoader.Core.Logging;
 
 namespace NextBepLoader.Core;
 
@@ -11,7 +10,9 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
     {
         LoaderInstance.Register(this);
     }
+
     public static T? Instance { get; private set; }
+    public virtual IConsoleManager ConsoleManager { get; set; }
 
     public virtual INextServiceManager ServiceManager { get; set; }
 
@@ -22,8 +23,6 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
     public IServiceProvider MainServices { get; set; }
 
     public Action<IServiceProvider>? OnServiceBuilt { get; set; }
-    public virtual IConsoleManager ConsoleManager { get; set; }
-    
 
 
     public abstract void Start();
@@ -33,7 +32,7 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
         try
         {
             Instance = new T();
-            if (start) 
+            if (start)
                 Instance.Start();
         }
         catch (Exception e)
@@ -45,14 +44,9 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
         message = null;
         return true;
     }
-    
-    internal static bool TryCreateLoader(bool start = true)
-    {
-        return TryCreateLoader(out var _, start);
-    }
+
+    internal static bool TryCreateLoader(bool start = true) => TryCreateLoader(out var _, start);
 }
-
-
 
 public interface ILoaderBase
 {
@@ -66,5 +60,5 @@ public interface ILoaderBase
 
     public Action<IServiceProvider>? OnServiceBuilt { get; set; }
 
-    public abstract void Start();
+    public void Start();
 }

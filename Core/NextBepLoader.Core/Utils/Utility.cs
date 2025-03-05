@@ -142,7 +142,7 @@ public static class Utility
             if (!Visit(input, currentStack))
                 throw new Exception("Cyclic Dependency:\r\n" + currentStack.Select(x => $" - {x}") //append dashes
                                                                            .Aggregate((a, b) =>
-                                                                                        $"{a}\r\n{b}")); //add new lines inbetween
+                                                                               $"{a}\r\n{b}")); //add new lines inbetween
         }
 
 
@@ -170,12 +170,16 @@ public static class Utility
         }
     }
 
-    public static bool TryResolveUnmanagedAssembly(string directory, string assemblyName, Func<string, IntPtr> loader, out IntPtr ptr)
+    public static bool TryResolveUnmanagedAssembly(string directory,
+                                                   string assemblyName,
+                                                   Func<string, IntPtr> loader,
+                                                   out IntPtr ptr)
     {
         ptr = IntPtr.Zero;
-        
+
         var dirs = GetAllDirectories(directory);
-        List<string> names = [$"{assemblyName}.dll", $"{assemblyName}.exe", $"{assemblyName}.so", $"{assemblyName}.dylib"];
+        List<string> names =
+            [$"{assemblyName}.dll", $"{assemblyName}.exe", $"{assemblyName}.so", $"{assemblyName}.dylib"];
         foreach (var path in dirs.SelectMany(dir => names.Select(name => Path.Combine(dir, name)).Where(File.Exists)))
         {
             try
@@ -186,7 +190,7 @@ public static class Utility
             {
                 continue;
             }
-                
+
             return true;
         }
 
@@ -204,17 +208,23 @@ public static class Utility
     public static bool TryResolveDllAssembly<T>(AssemblyName? assemblyName,
                                                 string directory,
                                                 Func<string, T> loader,
-                                                [MaybeNullWhen(false)]out T assembly) where T : class?
+                                                [MaybeNullWhen(false)] out T assembly) where T : class?
     {
         assembly = null;
 
         var dirs = GetAllDirectories(directory);
 
-        foreach (var path in from subDirectory in dirs let potentialPaths = new[]
-                 {
-                     $"{assemblyName?.Name}.dll",
-                     $"{assemblyName?.Name}.exe"
-                 } from potentialPath in potentialPaths select Path.Combine(subDirectory, potentialPath) into path where File.Exists(path) select path)
+        foreach (var path in from subDirectory in dirs
+                             let potentialPaths = new[]
+                             {
+                                 $"{assemblyName?.Name}.dll",
+                                 $"{assemblyName?.Name}.exe"
+                             }
+                             from potentialPath in potentialPaths
+                             select Path.Combine(subDirectory, potentialPath)
+                             into path
+                             where File.Exists(path)
+                             select path)
         {
             try
             {
@@ -235,7 +245,7 @@ public static class Utility
     {
         if (!Directory.Exists(directory))
             return [];
-        
+
         var dirs = new List<string> { directory };
         dirs.AddRange(Directory.GetDirectories(directory, "*", SearchOption.AllDirectories));
 
@@ -262,7 +272,9 @@ public static class Utility
     /// <param name="directory">Directory to search the assembly from.</param>
     /// <param name="assembly">The loaded assembly.</param>
     /// <returns>True, if the assembly was found and loaded. Otherwise, false.</returns>
-    public static bool TryResolveDllAssembly(AssemblyName? assemblyName, string directory,[MaybeNullWhen(false)] out Assembly assembly) =>
+    public static bool TryResolveDllAssembly(AssemblyName? assemblyName,
+                                             string directory,
+                                             [MaybeNullWhen(false)] out Assembly assembly) =>
         TryResolveDllAssembly(assemblyName, directory, Assembly.LoadFrom, out assembly);
 
     /// <summary>

@@ -20,14 +20,9 @@ namespace NextBepLoader.Deskstop;
 
 public sealed class DesktopLoader : LoaderBase<DesktopLoader>
 {
-    public override LoaderPathBase Paths { get; set; } = new DesktopPath();
-    public override LoaderPlatformType LoaderType => LoaderPlatformType.Desktop;
-    internal NextServiceCollection Collection { get; set; }
     private static readonly string CoreAssemblyName = typeof(LoaderInstance).Assembly.GetName().Name!;
 
-    public override IConsoleManager ConsoleManager => DesktopConsoleManager.Instance;
-
-    private static readonly string[] FullNames = 
+    private static readonly string[] FullNames =
     [
         typeof(BasePlugin).FullName!,
         typeof(BasePreLoader).FullName!,
@@ -41,6 +36,16 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
         AssemblyFilter = AssemblyFilter
     };
 
+    public readonly PreLoadEventArg PreLoadEventArg = new();
+    public override LoaderPathBase Paths { get; set; } = new DesktopPath();
+    public override LoaderPlatformType LoaderType => LoaderPlatformType.Desktop;
+    internal NextServiceCollection Collection { get; set; }
+
+    public override IConsoleManager ConsoleManager => DesktopConsoleManager.Instance;
+
+
+    public ILogListener? DiskLogListener { get; private set; }
+
     private static bool AssemblyFilter(AssemblyDefinition assembly)
     {
         if (assembly.ManifestModule == null)
@@ -48,27 +53,25 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
 
         var typeReferences = assembly.ManifestModule.GetImportedTypeReferences().ToList();
         var references = assembly.ManifestModule.AssemblyReferences.ToList();
-        return references.Any(n => n.Name!.Equals(CoreAssemblyName)) && FullNames.Any(name => typeReferences.Any(n => n.FullName.Equals(name)));
+        return references.Any(n => n.Name!.Equals(CoreAssemblyName)) &&
+               FullNames.Any(name => typeReferences.Any(n => n.FullName.Equals(name)));
     }
-    
 
-    public ILogListener? DiskLogListener { get; private set; }
-    public readonly PreLoadEventArg PreLoadEventArg = new();
     public override void Start()
     {
         PlatformUtils.SetDesktopPlatformVersion();
         RedirectStdErrFix.Apply();
-        
+
         DiskLogListener = new DiskListener("./LatestLog.log").Register();
         ConsoleManager.Init(new ConsoleConfig());
         ConsoleManager.CreateConsole();
-        
+
         LoaderVersion = new Version(1, 0, 0);
         Paths.InitPaths(true);
-        
+
         DotNetLoader.AddAssembliesFormDirector(Paths.PluginPath);
         DotNetLoader.AddAssembliesFormDirector(Paths.ProviderDirectory);
-        
+
         DotNetLoader.OnLoadType = (definition, assemblyDefinition) =>
         {
             Logger.LogInfo("Load Type: " + definition.FullName);

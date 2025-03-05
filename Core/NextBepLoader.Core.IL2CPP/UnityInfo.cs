@@ -5,7 +5,6 @@ using System.Linq;
 using AssetRipper.Primitives;
 using NextBepLoader.Core.IL2CPP.Utils;
 
-
 namespace NextBepLoader.Core.IL2CPP;
 
 /// <summary>
@@ -15,8 +14,6 @@ public class UnityInfo
 {
     private static UnityInfo? instance;
 
-    public static UnityInfo Instance => instance ??= new UnityInfo();
-
 
     // Adapted from https://github.com/SamboyCoding/Cpp2IL/blob/development/LibCpp2IL/LibCpp2IlMain.cs
     public static readonly ManagerLookup[] DefaultManagerVersionLookup =
@@ -25,9 +22,11 @@ public class UnityInfo
         new("data.unity3d", 0x12),
         new("mainData", 0x14)
     ];
-    
+
+    public static UnityInfo Instance => instance ??= new UnityInfo();
+
     public List<ManagerLookup> ManagerVersionLookup { get; } = [..DefaultManagerVersionLookup];
-    
+
     /// <summary>
     ///     Version of the Unity player
     /// </summary>
@@ -35,7 +34,7 @@ public class UnityInfo
     ///     Because BepInEx can execute very early, the exact Unity version might not be available in early
     ///     bootstrapping phases. The version should be treated as an estimation of the actual version of the Unity player.
     /// </remarks>
-    public UnityVersion? Version { get; private set; } 
+    public UnityVersion? Version { get; private set; }
 
     public void InitializeFormPaths() =>
         Initialize(Paths.ExecutablePath, Paths.GameDataPath);
@@ -74,7 +73,7 @@ public class UnityInfo
         var version = GetVersion();
         return new Version(version.Major, version.Minor, version.Build);
     }
-    
+
     public static implicit operator UnityVersion(UnityInfo info) => info.GetVersion();
 
     public static implicit operator Version(UnityInfo info) => info.ToVersion();

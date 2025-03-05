@@ -13,7 +13,7 @@ public class DesktopConsoleManager : IConsoleManager
 {
     public static DesktopConsoleManager Instance =>
         LoaderInstance.ConsoleRegister.GetOrCreateCurrent<DesktopConsoleManager>();
-    
+
     public ConsoleConfig ConsoleConfig { get; private set; }
     public ILogListener? LoggerListener { get; private set; }
 
@@ -39,6 +39,7 @@ public class DesktopConsoleManager : IConsoleManager
         {
             Logger.LogError("Failed to create console NoDriver");
         }
+
         return this;
     }
 
@@ -51,7 +52,7 @@ public class DesktopConsoleManager : IConsoleManager
         {
             Divider.DetachConsole();
             ActiveConsole = false;
-            
+
             LoggerListener?.Dispose();
             LoggerListener = null;
         }
@@ -59,6 +60,7 @@ public class DesktopConsoleManager : IConsoleManager
         {
             Logger.LogError("Failed to close console NoDriver");
         }
+
         return this;
     }
 
@@ -73,4 +75,3 @@ public class DesktopConsoleManager : IConsoleManager
     public bool EnableConsole { get; set; }
     public bool ActiveConsole { get; set; }
 }
-

@@ -27,7 +27,6 @@ public class ConfigDefinition : IEquatable<ConfigDefinition>
     }
 
 
-
     /// <summary>
     ///     Group of the setting. All settings within a config file are grouped by this.
     /// </summary>

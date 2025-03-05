@@ -17,7 +17,6 @@ namespace NextBepLoader.Core.IL2CPP.Utils.Collections;
 public class Il2CppManagedEnumerator : Object
 {
     private static readonly Dictionary<Type, System.Func<object, Object>> boxers = new();
-
     private readonly IEnumerator enumerator;
 
     static Il2CppManagedEnumerator()
@@ -47,7 +46,6 @@ public class Il2CppManagedEnumerator : Object
     };
 
     public bool MoveNext() => enumerator.MoveNext();
-
     public void Reset() => enumerator.Reset();
 
     private static System.Func<object, Object> GetValueBoxer(Type t)

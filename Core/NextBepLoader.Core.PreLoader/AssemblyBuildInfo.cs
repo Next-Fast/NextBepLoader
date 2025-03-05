@@ -65,13 +65,13 @@ public class AssemblyBuildInfo
     {
         var buildInfo = new AssemblyBuildInfo();
         var module = assemblyDefinition.ManifestModule!;
-        
+
         // framework version
 
         var runtime = module.RuntimeContext.TargetRuntime;
 
         buildInfo.AssemblyFrameworkType = FrameworkType.Unknown;
-        
+
         if (runtime.IsNetFramework)
             buildInfo.AssemblyFrameworkType = FrameworkType.NetFramework;
         if (runtime.IsNetStandard)
@@ -101,7 +101,7 @@ public class AssemblyBuildInfo
             MainModule.Architecture: AMD64
             MainModule.Attributes: ILOnly
         */
-        
+
         var architecture = module.MachineType;
 
         if (architecture.HasFlag(MachineType.Amd64))

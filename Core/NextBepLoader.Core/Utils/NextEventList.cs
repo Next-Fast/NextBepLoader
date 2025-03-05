@@ -13,14 +13,11 @@ public class NextEventList<T>(Action<ListEventType, T?> onEvent) : IList<T>
     public void Add(T item)
     {
         onEvent.Invoke(ListEventType.Add, item);
-        if (item != null) 
+        if (item != null)
             BaseList.Add(item);
     }
 
-    public void CopyTo(T[] array, int arrayIndex)
-    {
-        BaseList.CopyTo(array, arrayIndex);
-    }
+    public void CopyTo(T[] array, int arrayIndex) => BaseList.CopyTo(array, arrayIndex);
 
     public bool Remove(T item)
     {
@@ -42,7 +39,7 @@ public class NextEventList<T>(Action<ListEventType, T?> onEvent) : IList<T>
         onEvent.Invoke(ListEventType.Contains, item);
         return BaseList.Contains(item);
     }
-    
+
     public IEnumerator<T> GetEnumerator() => BaseList.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

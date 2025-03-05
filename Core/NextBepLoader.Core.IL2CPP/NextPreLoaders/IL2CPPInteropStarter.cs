@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Threading.Tasks;
 using Il2CppInterop.Common;
 using Il2CppInterop.Generator;
 using Il2CppInterop.Generator.Runners;
@@ -16,17 +14,14 @@ namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
 public class IL2CPPInteropStarter(
     INextBepEnv env,
-    ILogger<IL2CPPInteropStarter> logger, 
-    UnityInfo unityInfo
-    ) : BasePreLoader
+    ILogger<IL2CPPInteropStarter> logger,
+    UnityInfo unityInfo) : BasePreLoader
 {
-    public override Type[] WaitLoadLoader => [typeof(Cpp2ILStarter)];
     public IL2CPPCheckEventArg IL2CPPCheckEventArg;
+    public override Type[] WaitLoadLoader => [typeof(Cpp2ILStarter)];
 
-    public override void PreLoad(PreLoadEventArg arg)
-    {
+    public override void PreLoad(PreLoadEventArg arg) =>
         IL2CPPCheckEventArg = env.GetOrCreateEventArgs<IL2CPPCheckEventArg>();
-    }
 
     public override void Start()
     {
@@ -36,12 +31,12 @@ public class IL2CPPInteropStarter(
             var generatorTime = CoreUtils.StartStopwatch(StartGenerator);
             logger.LogInformation("IL2CPPInteropStarter Start generator,use time:{time}", generatorTime);
         }
+
         var runtimeTime = CoreUtils.StartStopwatch(StartRuntime);
         logger.LogInformation("IL2CPPInteropStarter Start Runtime,use time:{time}", runtimeTime);
     }
 
-    public void StartRuntime()
-    {
+    public void StartRuntime() =>
         Il2CppInteropRuntime.Create(new RuntimeConfiguration
                             {
                                 UnityVersion = unityInfo,
@@ -50,7 +45,6 @@ public class IL2CPPInteropStarter(
                             .AddLogger(logger)
                             .AddHarmonySupport()
                             .Start();
-    }
 
     public void StartGenerator()
     {

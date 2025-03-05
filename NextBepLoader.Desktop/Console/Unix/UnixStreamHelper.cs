@@ -1,5 +1,4 @@
 ﻿using MonoMod.Utils;
-using NextBepLoader.Core;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Unix;

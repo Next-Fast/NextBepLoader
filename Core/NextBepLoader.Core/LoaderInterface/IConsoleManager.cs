@@ -5,33 +5,22 @@ namespace NextBepLoader.Core.LoaderInterface;
 
 public interface IConsoleManager
 {
+    public IConsoleDivider? Divider { get; set; }
+
+    public bool EnableConsole { get; set; }
+
+    public bool ActiveConsole { get; internal set; }
+
     public IConsoleManager Init(ConsoleConfig config);
 
     public IConsoleManager CreateConsole();
-    
+
     public IConsoleManager CloseConsole();
-    
+
     public IConsoleDivider CreateDivider(ConsoleConfig config);
-    
-    public IConsoleDivider? Divider { get; set; }
-
-    public bool EnableConsole
-    {
-        get;
-        set;
-    }
-
-    public bool ActiveConsole
-    {
-        get;
-        internal set;
-    }
 }
 
-public record ConsoleConfig
-{
-    
-}
+public record ConsoleConfig { }
 
 public interface IConsoleDivider
 {

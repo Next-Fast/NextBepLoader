@@ -18,8 +18,8 @@ namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
 public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, UnityInfo unityInfo) : BasePreLoader
 {
+    private IL2CPPCheckEventArg il2CPPCheckEventArg;
     public override Type[] WaitLoadLoader => [typeof(HashComputer)];
-    private IL2CPPCheckEventArg il2CPPCheckEventArg ;
 
     public override void PreLoad(PreLoadEventArg arg)
     {
@@ -39,7 +39,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
         var runTime = CoreUtils.StartStopwatch(() =>
         {
             Cpp2IlApi.InitializeLibCpp2Il(Paths.GameAssemblyPath, Paths.GameMetaDataPath, unityInfo);
-        
+
             List<Cpp2IlProcessingLayer> processingLayers = [new AttributeInjectorProcessingLayer()];
 
             foreach (var cpp2IlProcessingLayer in processingLayers)
@@ -47,7 +47,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
 
             foreach (var cpp2IlProcessingLayer in processingLayers)
                 cpp2IlProcessingLayer.Process(Cpp2IlApi.CurrentAppContext);
-            
+
             var outputFormat = new AsmResolverDllOutputFormatDefault();
             result = outputFormat.BuildAssemblies(Cpp2IlApi.CurrentAppContext);
 
@@ -66,6 +66,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
             });
             logger.LogInformation("CPP2IL Cache Write Time {time}", time);
         }
+
         il2CPPCheckEventArg.ResolverAssemblies = result;
     }
 }

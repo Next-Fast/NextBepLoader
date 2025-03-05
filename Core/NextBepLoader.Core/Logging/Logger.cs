@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using NextBepLoader.Core.Logging.BepInExLogHandlers;
 using NextBepLoader.Core.Logging.DefaultSource;
 using NextBepLoader.Core.Logging.Interface;
@@ -25,9 +20,15 @@ public static class Logger
     ///     Collection of all log listeners that receive log events.
     /// </summary>
     public static readonly NextEventList<ILogListener> Listeners = new(OnListenerEventList);
-    
+
     private static readonly ManualLogSource MainLogSource = CreateLogSource(nameof(NextBepLoader));
-    
+
+
+    /// <summary>
+    ///     Log levels that are currently listened to by at least one listener.
+    /// </summary>
+    public static LogLevel ListenedLogLevels { get; private set; }
+
 
     private static void OnSourceEventList(ListEventType type, ILogSource? item)
     {
@@ -35,21 +36,22 @@ public static class Logger
         switch (type)
         {
             case ListEventType.Add:
-                item.LogEvent += InternalLogEvent; 
+                item.LogEvent += InternalLogEvent;
                 break;
-            
+
             case ListEventType.Clear:
             {
                 foreach (var source in Sources)
                     source.LogEvent -= InternalLogEvent;
                 break;
             }
-            
+
             case ListEventType.Remove:
-                    item.LogEvent -= InternalLogEvent;
+                item.LogEvent -= InternalLogEvent;
                 break;
         }
     }
+
     private static void OnListenerEventList(ListEventType type, ILogListener? item)
     {
         if (item == null) return;
@@ -58,7 +60,7 @@ public static class Logger
             case ListEventType.Add:
                 ListenedLogLevels |= item.LogLevelFilter;
                 break;
-            
+
             case ListEventType.Clear:
                 ListenedLogLevels = LogLevel.None;
                 break;
@@ -69,22 +71,16 @@ public static class Logger
                 break;
         }
     }
-    
-    
-    /// <summary>
-    ///     Log levels that are currently listened to by at least one listener.
-    /// </summary>
-    public static LogLevel ListenedLogLevels { get; private set; }
 
     private static void InternalLogEvent(object sender, LogEventArgs eventArgs)
     {
         foreach (var listener in Listeners.Where(
-                                                 listener => 
-                                                     (eventArgs.Level & listener.LogLevelFilter) 
-                                                  != 
+                                                 listener =>
+                                                     (eventArgs.Level & listener.LogLevelFilter)
+                                                   !=
                                                      LogLevel.None)
-                 )
-                listener.LogEvent(sender, eventArgs);
+                )
+            listener.LogEvent(sender, eventArgs);
     }
 
     /// <summary>
@@ -104,7 +100,7 @@ public static class Logger
                              BepInExLogInterpolatedStringHandler logHandler) =>
         MainLogSource.Log(level, logHandler);
 
-        /// <summary>
+    /// <summary>
     ///     Logs a message with <see cref="LogLevel.Fatal" /> level.
     /// </summary>
     /// <param name="data">Data to log.</param>
@@ -138,7 +134,8 @@ public static class Logger
     ///     Logs an interpolated string with <see cref="LogLevel.Warning" /> level.
     /// </summary>
     /// <param name="logHandler">Handler for the interpolated string.</param>
-    public static void LogWarning(BepInExWarningLogInterpolatedStringHandler logHandler) => Log(LogLevel.Warning, logHandler);
+    public static void LogWarning(BepInExWarningLogInterpolatedStringHandler logHandler) =>
+        Log(LogLevel.Warning, logHandler);
 
     /// <summary>
     ///     Logs a message with <see cref="LogLevel.Message" /> level.
@@ -150,7 +147,8 @@ public static class Logger
     ///     Logs an interpolated string with <see cref="LogLevel.Message" /> level.
     /// </summary>
     /// <param name="logHandler">Handler for the interpolated string.</param>
-    public static void LogMessage(BepInExMessageLogInterpolatedStringHandler logHandler) => Log(LogLevel.Message, logHandler);
+    public static void LogMessage(BepInExMessageLogInterpolatedStringHandler logHandler) =>
+        Log(LogLevel.Message, logHandler);
 
     /// <summary>
     ///     Logs a message with <see cref="LogLevel.Info" /> level.

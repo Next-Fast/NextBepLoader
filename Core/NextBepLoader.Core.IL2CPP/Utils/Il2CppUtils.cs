@@ -21,7 +21,7 @@ public static class Il2CppUtils
 
         return managerGo.AddComponent(Il2CppType.From(t));
     }
-    
+
     /// <summary>
     ///     Register and add a Unity Component (for example MonoBehaviour) into BepInEx global manager.
     ///     Automatically registers the type with Il2Cpp type system if it isn't initialised already.

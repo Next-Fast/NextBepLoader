@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Logging.DefaultSource;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -9,7 +8,7 @@ public static class CPP2ILUtils
 {
     public static ManualLogSource? BeLog;
     public static ILogger? MSLogger;
-    
+
     static CPP2ILUtils()
     {
         Cpp2IL.Core.Logging.Logger.VerboseLog += (message, s) =>

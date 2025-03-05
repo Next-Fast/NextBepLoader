@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using Il2CppInterop.Runtime.Injection;
 using MonoMod.Core;
-using MonoMod.Core.Platforms;
-using MonoMod.RuntimeDetour;
 
 namespace NextBepLoader.Core.IL2CPP.Hooks;
 

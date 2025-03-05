@@ -1,7 +1,6 @@
 ﻿// Sections of this code have been abridged from https://github.com/mono/mono/blob/master/mcs/class/corlib/System/TermInfoReader.cs under the MIT license
 
 using System.Text;
-using NextBepLoader.Core;
 using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Deskstop.Console.Unix;
@@ -10,9 +9,7 @@ namespace NextBepLoader.Deskstop.Console.Unix;
 internal class TtyInfo
 {
     public string TerminalType { get; set; } = "default";
-
     public int MaxColors { get; set; }
-
     public string[] ForegroundColorStrings { get; set; }
 
     public static TtyInfo Default { get; } = new()

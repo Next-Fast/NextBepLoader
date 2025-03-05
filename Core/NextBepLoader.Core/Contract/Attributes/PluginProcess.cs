@@ -27,7 +27,7 @@ public class PluginProcess : Attribute
     {
         var attrs = MetadataHelper.GetCustomAttributes<PluginProcess>(td, true);
         return attrs.Select(customAttribute =>
-                                new PluginProcess(((string)customAttribute.Signature!.NamedArguments[0].Argument.Element!)!)).ToList();
+                                new PluginProcess(((string)customAttribute.Signature!.NamedArguments[0].Argument
+                                                                          .Element!)!)).ToList();
     }
-    
 }

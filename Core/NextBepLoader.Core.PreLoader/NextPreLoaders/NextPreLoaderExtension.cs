@@ -12,7 +12,11 @@ public static class NextPreLoaderExtension
 {
     internal static readonly List<BasePreLoader> Cache = [];
 
-    public static IEnumerable<BasePreLoader> GetPreLoaders(params Assembly[] allAssembly) => allAssembly.SelectMany(assembly => assembly.GetPreLoadersFormAssembly(type => type.Namespace != null && type.Namespace.EndsWith("NextPreLoaders")));
+    public static IEnumerable<BasePreLoader> GetPreLoaders(params Assembly[] allAssembly) =>
+        allAssembly.SelectMany(assembly =>
+                                   assembly.GetPreLoadersFormAssembly(type => type.Namespace != null &&
+                                                                              type.Namespace
+                                                                                  .EndsWith("NextPreLoaders")));
 
     public static List<BasePreLoader> GetPreLoadersFormDef() =>
         typeof(NextPreLoaderExtension).Assembly.GetPreLoadersFormAssembly(type => type.Namespace ==
@@ -63,22 +67,20 @@ public static class NextPreLoaderExtension
         return true;
     }
 
-    public static void SortLoaders(this List<BasePreLoader> preLoaders)
-    {
+    public static void SortLoaders(this List<BasePreLoader> preLoaders) =>
         preLoaders.Sort((x, y) =>
         {
             if (x.WaitLoadLoader.Contains(y.GetType()))
                 return x.Priority > y.Priority ? 2 : 1;
 
-            if (!y.WaitLoadLoader.Contains(x.GetType())) 
+            if (!y.WaitLoadLoader.Contains(x.GetType()))
                 return 0;
-            
+
             if (x.Priority < y.Priority)
                 return -2;
-                
+
             return -1;
         });
-    }
 
     public static IServiceCollection AddStartRunner(this IServiceCollection collection)
     {
@@ -94,6 +96,7 @@ public static class NextPreLoaderExtension
             Logger.LogError("OnStartRunner is null");
             return;
         }
+
         startRunner.Run(provider);
     }
 }

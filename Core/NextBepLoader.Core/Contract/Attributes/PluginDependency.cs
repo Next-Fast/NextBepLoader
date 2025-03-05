@@ -10,7 +10,7 @@ namespace NextBepLoader.Core.Contract.Attributes;
 ///     This attribute specifies any dependencies that this plugin has on other plugins.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class PluginDependency : Attribute/*, ICacheable*/
+public class PluginDependency : Attribute /*, ICacheable*/
 {
     /// <summary>
     ///     Flags that are applied to a dependency

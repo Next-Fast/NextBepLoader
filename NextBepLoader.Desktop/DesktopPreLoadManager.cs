@@ -8,27 +8,24 @@ using NextBepLoader.Core.PreLoader.NextPreLoaders;
 namespace NextBepLoader.Deskstop;
 
 public sealed class DesktopPreLoadManager(
-    ILogger<DesktopPreLoadManager> logger, 
-    IServiceProvider provider, 
+    ILogger<DesktopPreLoadManager> logger,
+    IServiceProvider provider,
     DesktopLoader loader,
-    DotNetLoader dotNetLoader
-    ) : IPreLoaderManager, IOnLoadStart
+    DotNetLoader dotNetLoader) : IPreLoaderManager, IOnLoadStart
 {
-    public int Priority => 0;
     public List<BasePreLoader> PreLoaders { get; set; } = [];
+    public int Priority => 0;
 
-    public T? GetPreLoader<T>() where T : BasePreLoader => PreLoaders.FirstOrDefault(n => n is T) as T;
-    
     public async Task OnLoadStart()
     {
         PreLoaders.AddRange(provider.GetServices<BasePreLoader>());
-        
+
         var findTypes = new FastTypeFinder()
-                        .FindFormTypeLoader(dotNetLoader, type => type.BaseType?.FullName == typeof(BasePreLoader).FullName)
+                        .FindFormTypeLoader(dotNetLoader,
+                                            type => type.BaseType?.FullName == typeof(BasePreLoader).FullName)
                         ._AllFindInfo.Select(n => n.AssemblyType);
-        
+
         foreach (var preLoader in findTypes)
-        {
             try
             {
                 if (preLoader == null) continue;
@@ -39,16 +36,16 @@ public sealed class DesktopPreLoadManager(
             {
                 logger.LogWarning("PreLoader:{name} Load Error\n {exception}", preLoader?.Name, e.ToString());
             }
-        }
-        
+
         PreLoaders.SortLoaders();
         await LoadPreLoad();
     }
 
+    public T? GetPreLoader<T>() where T : BasePreLoader => PreLoaders.FirstOrDefault(n => n is T) as T;
+
     private Task LoadPreLoad()
     {
         foreach (var preLoader in PreLoaders)
-        {
             try
             {
                 logger.LogInformation("Run PreLoader:{name}", preLoader.GetType().Name);
@@ -57,16 +54,14 @@ public sealed class DesktopPreLoadManager(
             catch (Exception e)
             {
                 logger.LogError(
-                                e, 
-                                "PreLoader:{name} PreLoad Error\n {exception}", 
+                                e,
+                                "PreLoader:{name} PreLoad Error\n {exception}",
                                 preLoader.GetType().Name,
                                 e.ToString()
-                                );
+                               );
             }
-        }
 
         foreach (var preLoader in PreLoaders)
-        {
             try
             {
                 preLoader.Start();
@@ -74,16 +69,14 @@ public sealed class DesktopPreLoadManager(
             catch (Exception e)
             {
                 logger.LogError(
-                                e, 
-                                "PreLoader:{name} Start Error\n {exception}", 
+                                e,
+                                "PreLoader:{name} Start Error\n {exception}",
                                 preLoader.GetType().Name,
                                 e.ToString()
                                );
             }
-        }
 
         foreach (var preLoader in PreLoaders)
-        {
             try
             {
                 preLoader.Finish();
@@ -91,13 +84,12 @@ public sealed class DesktopPreLoadManager(
             catch (Exception e)
             {
                 logger.LogError(
-                                e, 
-                                "PreLoader:{name} Finish Error\n {exception}", 
+                                e,
+                                "PreLoader:{name} Finish Error\n {exception}",
                                 preLoader.GetType().Name,
                                 e.ToString()
                                );
             }
-        }
 
         return Task.CompletedTask;
     }

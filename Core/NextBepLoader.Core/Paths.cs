@@ -72,17 +72,17 @@ public static class Paths
     public static string DependencyDirectory => MainInstance?.DependencyDirectory ?? string.Empty;
 
     public static string CoreConfigFile => Path.Combine(ConfigPath, "NextBepLoaderConfig.Cfg");
-    
+
     public static string IL2CPPInteropAssemblyDirectory => MainInstance?.IL2CPPInteropAssemblyDirectory ?? string.Empty;
     public static string UnityBaseDirectory => MainInstance?.UnityBaseDirectory ?? string.Empty;
 
     public static string GameAssemblyName => MainInstance?.GameAssemblyName ?? string.Empty;
-    
+
     public static string GameAssemblyPath => MainInstance?.GameAssemblyPath ?? string.Empty;
-    
+
     public static string GameMetaDataPath => MainInstance?.GameMetadataPath ?? string.Empty;
-    
+
     public static string CPP2ILCacheDir => MainInstance?.CPP2ILCacheDir ?? string.Empty;
-    
+
     public static string CacheDataDir => MainInstance?.CacheDataDir ?? string.Empty;
 }

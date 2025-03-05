@@ -79,46 +79,47 @@ public abstract class LoaderPathBase
     ///     List of directories from where Mono will search assemblies before assembly resolving is invoked.
     /// </summary>
     public string[]? DllSearchPaths { get; set; }
-    
+
     public string ProviderDirectory { get; set; }
-    
+
     public string UnityBaseDirectory { get; set; }
-    
+
     public string GameAssemblyPath { get; set; }
-    
+
     public string GameAssemblyName { get; set; }
-    
+
     public string IL2CPPInteropAssemblyDirectory { get; set; }
-    
-    public string GameMetadataPath { get; set; } 
-    
+
+    public string GameMetadataPath { get; set; }
+
     public string CPP2ILCacheDir { get; set; }
-    
+
     public string CacheDataDir { get; set; }
-    
+
     public string TempDir { get; set; }
-    
+
     public string? SystemDir { get; set; }
 
     public virtual void InitPaths(bool autoCheckCreate = false)
-    { 
+    {
         Paths.MainInstance = this;
 
-        LoaderRootPath = SetPath(LoaderRootPath, true, true,nameof(NextBepLoader));
+        LoaderRootPath = SetPath(LoaderRootPath, true, true, nameof(NextBepLoader));
         ProcessName = string.IsNullOrEmpty(ProcessName)
                           ? Path.GetFileNameWithoutExtension(ExecutablePath)
                           : ProcessName;
         GameRootPath = string.IsNullOrEmpty(GameRootPath) ? Path.GetDirectoryName(ExecutablePath) : GameRootPath;
         ManagedPath = SetPath(ManagedPath, false, true, "Managed");
-        GameDataPath = SetPath(GameDataPath, false, true,$"{ProcessName}_Data");
+        GameDataPath = SetPath(GameDataPath, false, true, $"{ProcessName}_Data");
         ConfigPath = SetPath(ConfigPath, true, false, LoaderRootPath, "Config");
         CachePath = SetPath(CachePath, true, false, LoaderRootPath, "Cache");
         PluginPath = SetPath(PluginPath, true, true, "Plugins");
         CoreDirectory = SetPath(CoreDirectory, true, false, LoaderRootPath, "Core");
         ProviderDirectory = SetPath(ProviderDirectory, true, true, "Providers");
         CoreAssemblyPath = typeof(Paths).Assembly.Location;
-        UnityBaseDirectory = SetPath(UnityBaseDirectory, true, false, LoaderRootPath,"Unity-Libs");
-        IL2CPPInteropAssemblyDirectory = SetPath(IL2CPPInteropAssemblyDirectory, true, false, LoaderRootPath, "Interop");
+        UnityBaseDirectory = SetPath(UnityBaseDirectory, true, false, LoaderRootPath, "Unity-Libs");
+        IL2CPPInteropAssemblyDirectory =
+            SetPath(IL2CPPInteropAssemblyDirectory, true, false, LoaderRootPath, "Interop");
 
         if (DllSearchPaths == null)
         {
@@ -131,7 +132,7 @@ public abstract class LoaderPathBase
                                    "global-metadata.dat");
         if (string.IsNullOrEmpty(GameAssemblyName))
             GameAssemblyName = $"{CoreUtils.PlatformGameAssemblyName}.{CoreUtils.PlatformPostFix}";
-        
+
         GameAssemblyPath = SetPath(GameAssemblyPath, false, true, GameAssemblyName);
         CPP2ILCacheDir = SetPath(CPP2ILCacheDir, true, false, LoaderRootPath, "CacheCPP2IL");
         CacheDataDir = SetPath(CacheDataDir, true, false, LoaderRootPath, "CacheData");
@@ -146,7 +147,7 @@ public abstract class LoaderPathBase
         foreach (var path in checkList.Where(path => !Directory.Exists(path))) Directory.CreateDirectory(path);
     }
 
-    public string SetPath(string org , bool check, bool root = true,  params string[] pathNames)
+    public string SetPath(string org, bool check, bool root = true, params string[] pathNames)
     {
         if (!string.IsNullOrEmpty(org))
             return org;

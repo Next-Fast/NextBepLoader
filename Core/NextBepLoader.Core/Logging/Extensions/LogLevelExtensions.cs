@@ -37,7 +37,7 @@ public static class LogLevelExtensions
             LogLevel.Message => ConsoleColor.White,
             LogLevel.Info    => ConsoleColor.DarkGray,
             LogLevel.Debug   => ConsoleColor.DarkGray,
-            _                => ConsoleColor.Gray
+            var _            => ConsoleColor.Gray
         };
     }
 }

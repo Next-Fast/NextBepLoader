@@ -6,17 +6,16 @@ using System.Linq;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Utils;
 
-
 namespace NextBepLoader.Core.PreLoader.Bootstrap;
 
 public class FastCaches<T>(string cacheName) where T : ICacheableData, new()
 {
+    public readonly List<CacheInfo<T>> CacheInfos = [];
     public string CacheName { get; } = cacheName;
     public string CachePath { get; } = Path.Combine(Paths.CachePath, $"{cacheName}.cache");
-    public readonly List<CacheInfo<T>> CacheInfos = [];
 
 
-    public bool TryGet(string entryIdentifier,[MaybeNullWhen(false)] out List<T> items)
+    public bool TryGet(string entryIdentifier, [MaybeNullWhen(false)] out List<T> items)
     {
         if (CacheInfos.TryGet(n => n.EntryIdentifier == entryIdentifier, out var item))
         {
@@ -29,7 +28,8 @@ public class FastCaches<T>(string cacheName) where T : ICacheableData, new()
     }
 
     public void OnReadAssembly(string entryIdentifier, Stream dllStream) =>
-        CacheInfos.GetOrCreate(n => n.EntryIdentifier == entryIdentifier, () => new CacheInfo<T>(entryIdentifier, Utility.HashStream(dllStream)));
+        CacheInfos.GetOrCreate(n => n.EntryIdentifier == entryIdentifier,
+                               () => new CacheInfo<T>(entryIdentifier, Utility.HashStream(dllStream)));
 
     public void OnAddAssembly(string entryIdentifier, List<T> items) =>
         CacheInfos.GetAndSet(n => n.EntryIdentifier == entryIdentifier, n => n.FileItem = items);
@@ -38,7 +38,7 @@ public class FastCaches<T>(string cacheName) where T : ICacheableData, new()
     {
         if (!File.Exists(CachePath))
             return;
-        
+
         try
         {
             CacheInfos.Clear();
@@ -60,27 +60,26 @@ public class FastCaches<T>(string cacheName) where T : ICacheableData, new()
                 }
 
                 CacheInfos.GetOrCreate(
-                                       n => n.EntryIdentifier == entryIdentifier, 
+                                       n => n.EntryIdentifier == entryIdentifier,
                                        () => new CacheInfo<T>(entryIdentifier, hash)
                                        {
                                            FileItem = items
                                        }
-                                       );
+                                      );
             }
         }
         catch (Exception e)
         {
             Logger.LogWarning($"Failed to load cache \"{CacheName}\"; skipping loading cache. Reason: {e.Message}");
         }
-
     }
-    
+
 
     public void Write()
     {
         if (!File.Exists(CachePath))
             return;
-        
+
         try
         {
             using var stream = File.OpenWrite(CachePath);
@@ -106,5 +105,5 @@ public class FastCaches<T>(string cacheName) where T : ICacheableData, new()
 
 public record CacheInfo<T>(string EntryIdentifier, string FileHash) where T : ICacheableData
 {
-   public List<T> FileItem { get; set; } = []; 
+    public List<T> FileItem { get; set; } = [];
 }

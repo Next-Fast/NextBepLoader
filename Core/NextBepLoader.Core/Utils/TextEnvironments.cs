@@ -7,12 +7,17 @@ namespace NextBepLoader.Core.Utils;
 
 public class TextEnvironment
 {
-    private readonly List<IReplaceRule> rules = [];
     private readonly Dictionary<string, string> replacements = new();
+    private readonly List<IReplaceRule> rules = [];
+
+    public string this[string key]
+    {
+        get => replacements[key];
+        set => replacements[key] = value;
+    }
 
     public string Replace(string text)
     {
-
         var result = rules.Aggregate(text, (current, rule) => rule.Replace(current, replacements));
         return result;
     }
@@ -22,17 +27,11 @@ public class TextEnvironment
         rules.Add(rule);
         return this;
     }
-    
+
     public TextEnvironment Register(string key, string value)
     {
         replacements[key] = value;
         return this;
-    }
-    
-    public string this[string key]
-    {
-        get => replacements[key];
-        set => replacements[key] = value;
     }
 
     public static explicit operator Dictionary<string, string>(TextEnvironment env) => env.replacements;
@@ -45,10 +44,10 @@ public interface IReplaceRule
     public string Replace(string text, string key, string value);
 }
 
-
 public class CharReplaceRule(char @char) : BaseReplaceRule
 {
-    public override string Replace(string text, string key, string value) => base.Replace(text, $"{@char}{key}{@char}", value);
+    public override string Replace(string text, string key, string value) =>
+        base.Replace(text, $"{@char}{key}{@char}", value);
 }
 
 public class RegexReplaceRule(Regex regex) : BaseReplaceRule
@@ -60,6 +59,7 @@ public class RegexReplaceRule(Regex regex) : BaseReplaceRule
 public class BaseReplaceRule(string[]? allowKeys = null) : IReplaceRule
 {
     public string[] AllowKeys { get; set; } = allowKeys ?? [];
+
     public virtual string Replace(string text, Dictionary<string, string> replacements)
     {
         var result = text;

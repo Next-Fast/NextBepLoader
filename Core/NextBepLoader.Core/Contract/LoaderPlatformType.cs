@@ -10,6 +10,5 @@ public enum LoaderPlatformType
     IL2CPP = 2,
     Desktop = Core | PreLoader | IL2CPP | 3,
     Android = Core | PreLoader | IL2CPP | 4,
-    Unknown = 5,
+    Unknown = 5
 }
-

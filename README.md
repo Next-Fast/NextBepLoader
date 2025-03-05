@@ -3,14 +3,15 @@
 </p>
 
 # NextBeLoader
+
 基于BepInEx进行修改分支的模组加载器  
 使用NET9.0  
 将IL2CPPInterop和HarmonyX和MonoMod更新到最新版本  
 请将BepInEx.Msbuild.IL2CPP替换为NextBepLoader.BepInEx.Msbuild.IL2CPP以适配IL2CPPInterop更新    
-仅当使用游戏Nuget包来代替引用Interop文件夹时需要使用Msbuild.IL2CPP  
+仅当使用游戏Nuget包来代替引用Interop文件夹时需要使用Msbuild.IL2CPP
 
 MonoMod 和 HarmonyX 更新来自 https://github.com/BepInEx/BepInEx/pull/946  
-Android 相关来自 https://github.com/LemonLoader/MelonLoader  
+Android 相关来自 https://github.com/LemonLoader/MelonLoader
 
 #### 框架兼容性
 
