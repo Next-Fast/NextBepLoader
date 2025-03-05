@@ -75,14 +75,7 @@ public static class NextServiceManagerExtension
 
 public class NextServiceCollection : ServiceCollection
 {
-    public static readonly string[] NoCopyNames =
-    [
-        "IOptions",
-        "IOptionsMonitor",
-        "IOptionsMonitorCache",
-        "ILogger"
-    ];
-
+    
     public string ServiceId { get; set; }
 
     private NextServiceProvider? Provider { get; set; }
@@ -94,11 +87,12 @@ public class NextServiceCollection : ServiceCollection
             try
             {
                 if (Contains(service)) continue;
-                if (NoCopyNames.Contains(service.ServiceType.Name)) continue;
+                var fullName = service.ServiceType.FullName ?? string.Empty;
+                if (fullName.StartsWith("System") || fullName.StartsWith("Microsoft")) continue;
                 var get = provider.GetService(service.ServiceType);
                 if (get == null) continue;
                 this.AddSingleton(service.ServiceType, get);
-                Logger.LogInfo($"Copy Get Type:{service.ServiceType.Name} Imp:{service.ImplementationType?.Name ?? "null"}");
+                Logger.LogInfo($"Copy Get Type:{service.ServiceType.Name} Imp:{service.ImplementationType?.Name ?? "null"} Full:{fullName}");
             }
             catch
             {

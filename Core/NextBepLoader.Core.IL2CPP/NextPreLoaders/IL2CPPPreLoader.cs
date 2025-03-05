@@ -7,6 +7,7 @@ using MonoMod.Utils;
 using NextBepLoader.Core.IL2CPP.Hooks;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.PreLoader;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
@@ -40,5 +41,5 @@ public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, U
     }
 
     private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
-        libraryName == "GameAssembly" ? NativeLibrary.Load(Paths.GameAssemblyPath, assembly, searchPath) : IntPtr.Zero;
+        libraryName == CoreUtils.PlatformGameAssemblyName ? NativeLibrary.Load(Paths.GameAssemblyPath, assembly, searchPath) : IntPtr.Zero;
 }

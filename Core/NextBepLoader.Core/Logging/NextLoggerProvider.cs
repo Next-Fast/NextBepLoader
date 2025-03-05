@@ -8,13 +8,13 @@ namespace NextBepLoader.Core.Logging;
 
 public class NextLoggerProvider : MicrosoftLogging.ILoggerProvider
 {
-    private readonly List<NextLogger> loggers = [];
+    private readonly List<NextLogger> _loggers = [];
 
     public void Dispose()
     {
-        foreach (var logger in loggers)
+        foreach (var logger in _loggers)
             logger.Dispose();
-        loggers.Clear();
+        _loggers.Clear();
     }
 
     public MicrosoftLogging.ILogger CreateLogger(string categoryName)

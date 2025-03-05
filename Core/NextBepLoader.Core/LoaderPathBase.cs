@@ -99,6 +99,8 @@ public abstract class LoaderPathBase
     public string TempDir { get; set; }
 
     public string? SystemDir { get; set; }
+    
+    public string LogsDir { get; set; }
 
     public virtual void InitPaths(bool autoCheckCreate = false)
     {
@@ -137,6 +139,7 @@ public abstract class LoaderPathBase
         CPP2ILCacheDir = SetPath(CPP2ILCacheDir, true, false, LoaderRootPath, "CacheCPP2IL");
         CacheDataDir = SetPath(CacheDataDir, true, false, LoaderRootPath, "CacheData");
         TempDir = SetPath(TempDir, true, false, LoaderRootPath, "Temp");
+        LogsDir = SetPath(LogsDir, true, false, LoaderRootPath, "Logs");
 
         if (autoCheckCreate)
             CheckCreateDirectories();

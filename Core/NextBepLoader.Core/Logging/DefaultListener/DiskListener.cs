@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using NextBepLoader.Core.Logging.Interface;
 using NextBepLoader.Core.Utils;
 
@@ -9,16 +10,26 @@ public class DiskListener(
     LogLevel logLevel = LogLevel.Fatal | LogLevel.Error | LogLevel.Warning | LogLevel.Message | LogLevel.Info)
     : ILogListener
 {
-    public readonly TextWriter? Writer = CreateWriter(path);
+    private readonly TextWriter? _writer 
+        = CreateWriter(path);
+    
+    private readonly TextWriter? _logsWriter
+        = CreateWriter(Paths.LogsDir, $"{CoreUtils.TimeStamp}.log");
     public LogLevel LogLevelFilter => logLevel;
 
-    public void LogEvent(object sender, LogEventArgs eventArgs) => Writer?.WriteLine(eventArgs.ToString());
+    public void LogEvent(object sender, LogEventArgs eventArgs)
+    {
+        var text = eventArgs.ToString();
+        
+        _writer?.WriteLine(text);
+        _logsWriter?.WriteLine(text);
+    }
 
     public void Dispose()
     {
         try
         {
-            Writer?.Dispose();
+            _writer?.Dispose();
 
             if (Logger.Listeners.Contains(this))
                 Logger.Listeners.Remove(this);
@@ -29,9 +40,10 @@ public class DiskListener(
         }
     }
 
-    private static TextWriter? CreateWriter(string path)
+    private static TextWriter? CreateWriter(params string[] path)
     {
-        var stream = File.OpenWrite(path);
+        var combinePath = path.Aggregate(Path.Combine);
+        var stream = File.OpenWrite(combinePath);
         var writer = new StreamWriter(stream, Utility.UTF8NoBom)
         {
             AutoFlush = true

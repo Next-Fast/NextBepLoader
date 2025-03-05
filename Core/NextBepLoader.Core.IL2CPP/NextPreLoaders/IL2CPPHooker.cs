@@ -33,9 +33,6 @@ public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger, IProviderManager 
         if (NativeLibrary.TryLoad(CoreUtils.PlatformGameAssemblyName, typeof(IL2CPPHooker).Assembly, null, out handle))
             return true;
 
-        if (NativeLibrary.TryLoad("GameAssembly", typeof(IL2CPPHooker).Assembly, null, out handle))
-            return true;
-
         logger.LogError("Could not locate Il2Cpp game assembly (GameAssembly.dll, UserAssembly.dll or libil2cpp.so)." +
                         " The game might be obfuscated or use a yet unsupported build of Unity.");
         return false;
