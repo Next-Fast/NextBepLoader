@@ -4,6 +4,7 @@ using AsmResolver.DotNet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NextBepLoader.Core;
+using NextBepLoader.Core.Configuration;
 using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.Contract.Attributes;
 using NextBepLoader.Core.LoaderInterface;
@@ -16,9 +17,10 @@ public class PluginLoadProvider(
     ILogger<PluginLoadProvider> logger,
     DotNetLoader loader,
     PluginInfoManager pluginInfoManager)
-    : LoadProviderBase<BasePlugin>(loader)
+    : LoadProviderBase<INextPlugin>(loader)
 {
     private static readonly string FullName = typeof(BasePlugin).FullName ?? "";
+    private static readonly string InterfaceName = typeof(INextPlugin).FullName ?? "";
     private ServiceFastInfo? _pluginServiceInfo;
     public bool GameActivated { get; private set; }
 
@@ -37,11 +39,12 @@ public class PluginLoadProvider(
         if (metadata == null)
             return false;
 
+        context.Metadata = metadata;
         context.HasLoad = true;
         return true;
     }
 
-    protected override BasePlugin? Selector(FastTypeFinder.FindInfo info)
+    protected override INextPlugin? Selector(FastTypeFinder.FindInfo info)
     {
         if (info.AssemblyType == null || !pluginInfoManager.TryGet(info, out var context) || context.Metadata == null)
             return null;
@@ -56,7 +59,7 @@ public class PluginLoadProvider(
             // ignored
         }
 
-        BasePlugin? instance = null;
+        INextPlugin? instance = null;
 
         try
         {
@@ -65,7 +68,7 @@ public class PluginLoadProvider(
                                                        ??
                                                          NextServiceManager.Instance.MainProvider,
                                                          info.AssemblyType
-                                                        ) as BasePlugin;
+                                                        ) as INextPlugin;
             logger.LogInformation("Create Plugin Instance:\n Name:{name} Version:{version} Puid:{puid}",
                                   context.Name, context.Version, context.Puid);
         }
@@ -74,11 +77,13 @@ public class PluginLoadProvider(
             logger.LogError("Create Instance Error:\n Path:{path} Type:{type}", info.Path, info.TypeName);
         }
 
-        if (instance != null)
-        {
-            context.Instance = instance;
-            instance.Metadata = context.Metadata;
-        }
+        if (instance == null) return instance;
+        context.Instance = instance;
+
+        if (instance is not BasePlugin basePlugin) return instance;
+        
+        basePlugin.Metadata = context.Metadata;
+        basePlugin.Config = new ConfigFile(Path.Combine(Paths.ConfigPath, $"{context.Metadata.Name}.cfg"), true);
 
         return instance;
     }
@@ -95,7 +100,8 @@ public class PluginLoadProvider(
         var isTarget = baseType.FullName.Equals(FullName);
         logger.LogInformation($"is Target: {baseType.FullName} {FullName} {isTarget}");
 
-        if (isTarget) pluginInfoManager.Create(type);
+        if (isTarget) 
+            pluginInfoManager.Create(type);
 
         return isTarget;
     }
@@ -139,20 +145,20 @@ public class PluginLoadContext : IContent
 
     public bool HasLoad { get; set; }
 
-    internal string typeName { get; set; }
+    internal string TypeName { get; set; }
 
-    internal TypeDefinition typeDefinition { get; set; }
-    internal FastTypeFinder.FindInfo findInfo { get; set; }
+    internal TypeDefinition TypeDefinition { get; set; }
+    internal FastTypeFinder.FindInfo FindInfo { get; set; }
 
     internal bool RunModuleConstructor { get; set; }
 
-    public BasePlugin? Instance { get; set; }
+    public INextPlugin? Instance { get; set; }
 
     public PluginMetadata? Metadata { get; set; }
 
     public T? To<T>() where T : BasePlugin
     {
-        if (typeName != typeof(T).FullName)
+        if (TypeName != typeof(T).FullName)
             return null;
 
         return Instance as T;
@@ -167,24 +173,24 @@ public class PluginInfoManager : IInfoManager
     {
         var pluginLoadContext = new PluginLoadContext
         {
-            typeDefinition = typeDefinition
+            TypeDefinition = typeDefinition
         };
         _allLoadContexts.Add(pluginLoadContext);
     }
 
     public bool TryGet(FastTypeFinder.FindInfo findInfo, [MaybeNullWhen(false)] out PluginLoadContext pluginLoadContext)
     {
-        pluginLoadContext = _allLoadContexts.FirstOrDefault(x => x.findInfo == findInfo);
+        pluginLoadContext = _allLoadContexts.FirstOrDefault(x => x.FindInfo == findInfo);
         return pluginLoadContext != null;
     }
 
     internal bool TryGet(TypeDefinition definition, [MaybeNullWhen(false)] out PluginLoadContext pluginLoadContext)
     {
-        pluginLoadContext = _allLoadContexts.FirstOrDefault(x => x.typeDefinition == definition);
+        pluginLoadContext = _allLoadContexts.FirstOrDefault(x => x.TypeDefinition == definition);
         return pluginLoadContext != null;
     }
 
-    internal bool TryGet(BasePlugin plugin, [MaybeNullWhen(false)] out PluginLoadContext pluginLoadContext)
+    internal bool TryGet(INextPlugin plugin, [MaybeNullWhen(false)] out PluginLoadContext pluginLoadContext)
     {
         pluginLoadContext = _allLoadContexts.FirstOrDefault(x => x.Instance == plugin);
         return pluginLoadContext != null;

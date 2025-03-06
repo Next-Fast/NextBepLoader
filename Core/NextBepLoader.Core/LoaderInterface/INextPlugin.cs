@@ -1,4 +1,4 @@
-namespace NextBepLoader.Core.Contract;
+namespace NextBepLoader.Core.LoaderInterface;
 
 public interface INextPlugin
 {

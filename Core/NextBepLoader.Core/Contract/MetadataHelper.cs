@@ -92,11 +92,9 @@ public static class MetadataHelper
         var id = attr.Signature!.NamedArguments[1].Argument.Element!.ToString();
         var metadata = new PluginMetadata(type, id);
 
-        if (attr.Signature.NamedArguments.Count > 2)
-        {
-            metadata.Name = attr.Signature.NamedArguments[2].Argument.Element!.ToString();
-            metadata.Version = new Version(attr.Signature.NamedArguments[3].Argument.Element!.ToString());
-        }
+        if (attr.Signature.NamedArguments.Count <= 2) return metadata;
+        metadata.Name = attr.Signature.NamedArguments[2].Argument.Element!.ToString();
+        metadata.Version = new Version(attr.Signature.NamedArguments[3].Argument.Element!.ToString());
 
         return metadata;
     }
