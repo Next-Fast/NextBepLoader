@@ -142,7 +142,7 @@ public static class Utility
             if (!Visit(input, currentStack))
                 throw new Exception("Cyclic Dependency:\r\n" + currentStack.Select(x => $" - {x}") //append dashes
                                                                            .Aggregate((a, b) =>
-                                                                               $"{a}\r\n{b}")); //add new lines inbetween
+                                                                                        $"{a}\r\n{b}")); //add new lines inbetween
         }
 
 

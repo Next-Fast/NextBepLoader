@@ -75,7 +75,6 @@ public static class NextServiceManagerExtension
 
 public class NextServiceCollection : ServiceCollection
 {
-    
     public string ServiceId { get; set; }
 
     private NextServiceProvider? Provider { get; set; }
@@ -140,7 +139,7 @@ public class NextServiceDescriptor : ServiceDescriptor
     public NextServiceDescriptor(Type serviceType, object instance) : base(serviceType, instance) { }
 
     public NextServiceDescriptor(Type serviceType, object? serviceKey, object instance) : base(serviceType, serviceKey,
-        instance) { }
+             instance) { }
 
     public NextServiceDescriptor(Type serviceType, Func<IServiceProvider, object> factory, ServiceLifetime lifetime) :
         base(serviceType, factory, lifetime) { }

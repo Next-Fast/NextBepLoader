@@ -10,17 +10,18 @@ public class DiskListener(
     LogLevel logLevel = LogLevel.Fatal | LogLevel.Error | LogLevel.Warning | LogLevel.Message | LogLevel.Info)
     : ILogListener
 {
-    private readonly TextWriter? _writer 
-        = CreateWriter(path);
-    
     private readonly TextWriter? _logsWriter
         = CreateWriter(Paths.LogsDir, $"{CoreUtils.TimeStamp}.log");
+
+    private readonly TextWriter? _writer
+        = CreateWriter(path);
+
     public LogLevel LogLevelFilter => logLevel;
 
     public void LogEvent(object sender, LogEventArgs eventArgs)
     {
         var text = eventArgs.ToString();
-        
+
         _writer?.WriteLine(text);
         _logsWriter?.WriteLine(text);
     }

@@ -85,6 +85,6 @@ public static class Paths
     public static string CPP2ILCacheDir => MainInstance?.CPP2ILCacheDir ?? string.Empty;
 
     public static string CacheDataDir => MainInstance?.CacheDataDir ?? string.Empty;
-    
+
     public static string LogsDir => MainInstance?.LogsDir ?? string.Empty;
 }

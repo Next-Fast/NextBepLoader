@@ -7,7 +7,7 @@ namespace NextBepLoader.Core.Contract;
 public abstract class BasePlugin : INextPlugin
 {
     public PluginMetadata? Metadata { get; internal set; }
-    
+
 
     public ConfigFile Config { get; internal set; }
 

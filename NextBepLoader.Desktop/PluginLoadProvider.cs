@@ -81,7 +81,7 @@ public class PluginLoadProvider(
         context.Instance = instance;
 
         if (instance is not BasePlugin basePlugin) return instance;
-        
+
         basePlugin.Metadata = context.Metadata;
         basePlugin.Config = new ConfigFile(Path.Combine(Paths.ConfigPath, $"{context.Metadata.Name}.cfg"), true);
 
@@ -100,7 +100,7 @@ public class PluginLoadProvider(
         var isTarget = baseType.FullName.Equals(FullName);
         logger.LogInformation($"is Target: {baseType.FullName} {FullName} {isTarget}");
 
-        if (isTarget) 
+        if (isTarget)
             pluginInfoManager.Create(type);
 
         return isTarget;

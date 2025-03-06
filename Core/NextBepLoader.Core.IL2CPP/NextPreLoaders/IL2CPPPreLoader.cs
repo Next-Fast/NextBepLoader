@@ -41,5 +41,7 @@ public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, U
     }
 
     private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
-        libraryName == CoreUtils.PlatformGameAssemblyName ? NativeLibrary.Load(Paths.GameAssemblyPath, assembly, searchPath) : IntPtr.Zero;
+        libraryName == CoreUtils.PlatformGameAssemblyName
+            ? NativeLibrary.Load(Paths.GameAssemblyPath, assembly, searchPath)
+            : IntPtr.Zero;
 }

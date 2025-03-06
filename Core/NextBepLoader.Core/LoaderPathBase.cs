@@ -99,7 +99,7 @@ public abstract class LoaderPathBase
     public string TempDir { get; set; }
 
     public string? SystemDir { get; set; }
-    
+
     public string LogsDir { get; set; }
 
     public virtual void InitPaths(bool autoCheckCreate = false)

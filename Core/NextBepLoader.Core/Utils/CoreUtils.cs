@@ -18,11 +18,10 @@ namespace NextBepLoader.Core.Utils;
 
 public static class CoreUtils
 {
-    public static string TimeStamp => DateTime.Now.ToString("G").Replace("/", "_").Replace(" ", "_").Replace(":", "_");
-    
     public static readonly bool IsMono = PlatformDetection.Runtime == RuntimeKind.Mono;
 
     public static readonly bool IsCore = PlatformDetection.Runtime == RuntimeKind.CoreCLR;
+    public static string TimeStamp => DateTime.Now.ToString("G").Replace("/", "_").Replace(" ", "_").Replace(":", "_");
 
     public static string PlatformPostFix => PlatformPostFixGet();
     public static string PlatformGameAssemblyName => PlatformGameAssemblyNameGet();
