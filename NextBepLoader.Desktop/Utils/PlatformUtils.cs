@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using MonoMod.Utils;
 using NextBepLoader.Core.Utils;
+// ReSharper disable InconsistentNaming
 
 namespace NextBepLoader.Deskstop.Utils;
 

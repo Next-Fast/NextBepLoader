@@ -18,12 +18,12 @@ internal class WindowsConsoleDriver : IConsoleDivider
         AccessTools.Constructor(typeof(FileStream), [typeof(IntPtr), typeof(FileAccess)])
     }.FirstOrDefault(m => m != null);
 
-    private readonly Func<int>? getWindowHeight = AccessTools
+    private readonly Func<int>? _getWindowHeight = AccessTools
                                                   .PropertyGetter(typeof(System.Console),
                                                                   nameof(System.Console.WindowHeight))
                                                   ?.CreateDelegate<Func<int>>();
 
-    private readonly Func<int>? getWindowWidth = AccessTools
+    private readonly Func<int>? _getWindowWidth = AccessTools
                                                  .PropertyGetter(typeof(System.Console),
                                                                  nameof(System.Console.WindowWidth))
                                                  ?.CreateDelegate<Func<int>>();
@@ -34,7 +34,7 @@ internal class WindowsConsoleDriver : IConsoleDivider
         {
             try
             {
-                return getWindowWidth?.Invoke() ?? 0;
+                return _getWindowWidth?.Invoke() ?? 0;
             }
             catch (IOException)
             {
@@ -49,7 +49,7 @@ internal class WindowsConsoleDriver : IConsoleDivider
         {
             try
             {
-                return getWindowHeight?.Invoke() ?? 0;
+                return _getWindowHeight?.Invoke() ?? 0;
             }
             catch (IOException)
             {
@@ -144,7 +144,7 @@ internal class WindowsConsoleDriver : IConsoleDivider
         return (FileStream)Activator.CreateInstance(typeof(FileStream), ctorParams)!;
     }
 
-    private IntPtr GetOutHandle() =>
+    private static IntPtr GetOutHandle() =>
         /*switch (ConsoleManager.ConfigConsoleOutRedirectType.Value)
         {
             case ConsoleManager.ConsoleOutRedirectType.ConsoleOut:

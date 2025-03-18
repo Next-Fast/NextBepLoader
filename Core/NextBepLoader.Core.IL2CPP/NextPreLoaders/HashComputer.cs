@@ -11,7 +11,7 @@ using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public class HashComputer(INextBepEnv env, ILogger<HashComputer> logger, UnityInfo unityInfo) : BasePreLoader
+internal class HashComputer(INextBepEnv env, ILogger<HashComputer> logger, UnityInfo unityInfo) : BasePreLoader
 {
     public IL2CPPCheckEventArg EventArg;
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];

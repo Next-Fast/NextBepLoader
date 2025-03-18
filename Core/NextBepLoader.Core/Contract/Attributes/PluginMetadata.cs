@@ -26,12 +26,6 @@ public class PluginMetadata(LoaderPlatformType type, string id) : Attribute
     public Version Version { get; set; }
     public string VersionString { get; set; }
 
-    public List<PluginDependency> Dependencies { get; set; }
-
-    public List<PluginCompatibility> Compatibilities { get; set; }
-
-    public List<PluginProcess> Processes { get; set; }
-
     private void SetVersion(Version? version)
     {
         Version = version ?? new Version(1, 0, 0);

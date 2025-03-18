@@ -26,19 +26,19 @@ public static class LoaderInstance
 
 public class InstanceRegister<T>
 {
-    private readonly List<T> instances = [];
+    private readonly List<T> _instances = [];
     public T Current { get; private set; }
 
     public TGet GetOrCreateCurrent<TGet>() where TGet : class, T, new()
     {
-        if (instances.Count == 0)
+        if (_instances.Count == 0)
             Register(new TGet());
         return (Current as TGet)!;
     }
 
     public void Register(T instance)
     {
-        instances.Add(instance);
+        _instances.Add(instance);
         Current = instance;
     }
 
@@ -47,12 +47,12 @@ public class InstanceRegister<T>
     public bool TryGet<TGet>([MaybeNullWhen(false)] out TGet result) where TGet : class, T
     {
         result = null;
-        var instance = instances.FirstOrDefault(n => n is TGet);
+        var instance = _instances.FirstOrDefault(n => n is TGet);
         if (instance is not TGet get) return false;
         result = get;
         return true;
     }
 
     public static explicit operator T(InstanceRegister<T> register) => register.Current;
-    public static implicit operator List<T>(InstanceRegister<T> register) => register.instances;
+    public static implicit operator List<T>(InstanceRegister<T> register) => register._instances;
 }

@@ -8,7 +8,7 @@ namespace NextBepLoader.Core.IL2CPP.Hooks;
 internal abstract class BaseNativeDetour<T>(IntPtr originalMethodPtr, IntPtr detourMethod) : ICoreNativeDetour
     where T : BaseNativeDetour<T>
 {
-    protected static readonly ManualLogSource _Logger = Logger.CreateLogSource(typeof(T).Name);
+    private static readonly ManualLogSource Logger = Core.Logging.Logger.CreateLogSource(typeof(T).Name);
 
     public bool IsPrepared { get; protected set; }
 
@@ -33,7 +33,7 @@ internal abstract class BaseNativeDetour<T>(IntPtr originalMethodPtr, IntPtr det
         Prepare();
         ApplyImpl();
 
-        _Logger.Log(LogLevel.Debug,
+        Logger.Log(LogLevel.Debug,
                     $"Original: {Source:X}, Trampoline: {OrigEntrypoint:X}, diff: {Math.Abs(Source - OrigEntrypoint):X}");
 
         IsApplied = true;
@@ -51,9 +51,9 @@ internal abstract class BaseNativeDetour<T>(IntPtr originalMethodPtr, IntPtr det
     private void Prepare()
     {
         if (IsPrepared) return;
-        _Logger.LogDebug($"Preparing detour from 0x{Source:X2} to 0x{Target:X2}");
+        Logger.LogDebug($"Preparing detour from 0x{Source:X2} to 0x{Target:X2}");
         PrepareImpl();
-        _Logger.LogDebug($"Prepared detour; Trampoline: 0x{OrigEntrypoint:X2}");
+        Logger.LogDebug($"Prepared detour; Trampoline: 0x{OrigEntrypoint:X2}");
         IsPrepared = true;
     }
 

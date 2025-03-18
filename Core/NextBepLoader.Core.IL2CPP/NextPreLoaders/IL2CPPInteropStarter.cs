@@ -12,7 +12,7 @@ using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public class IL2CPPInteropStarter(
+internal class IL2CPPInteropStarter(
     INextBepEnv env,
     ILogger<IL2CPPInteropStarter> logger,
     UnityInfo unityInfo) : BasePreLoader

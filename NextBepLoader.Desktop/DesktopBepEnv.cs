@@ -5,40 +5,40 @@ namespace NextBepLoader.Deskstop;
 
 public class DesktopBepEnv : INextBepEnv, IOnLoadStart
 {
-    private readonly Dictionary<Type, object> actions = new();
-    private readonly Action<DesktopBepEnv> onExited = env => { };
-    private readonly Dictionary<string, string> systemEnvs = new();
+    private readonly Dictionary<Type, object> _actions = new();
+    private readonly Action<DesktopBepEnv> _onExited = env => { };
+    private readonly Dictionary<string, string> _systemEnvs = new();
 
     public Process CurrentProcess { get; set; }
 
 
     public INextBepEnv RegisterSystemEnv(string variable, string value)
     {
-        systemEnvs.Add(variable, value);
+        _systemEnvs.Add(variable, value);
         Environment.SetEnvironmentVariable(variable, value);
         return this;
     }
 
     public INextBepEnv RegisterEventArgs<T>(T arg) where T : EventArgs
     {
-        actions.Add(typeof(T), arg);
+        _actions.Add(typeof(T), arg);
         return this;
     }
 
-    public T? GetEventArgs<T>() where T : EventArgs => actions.FirstOrDefault(n => n.Key == typeof(T)).Value as T;
+    public T? GetEventArgs<T>() where T : EventArgs => _actions.FirstOrDefault(n => n.Key == typeof(T)).Value as T;
 
     public T GetOrCreateEventArgs<T>() where T : EventArgs, new()
     {
-        if (actions.TryGetValue(typeof(T), out var value)) return (T)value;
+        if (_actions.TryGetValue(typeof(T), out var value)) return (T)value;
 
         var t = new T();
-        actions.Add(typeof(T), t);
+        _actions.Add(typeof(T), t);
         return t;
     }
 
     public INextBepEnv UpdateEventArgs<T>(T arg) where T : EventArgs
     {
-        actions[typeof(T)] = arg;
+        _actions[typeof(T)] = arg;
         return this;
     }
 
@@ -53,10 +53,10 @@ public class DesktopBepEnv : INextBepEnv, IOnLoadStart
 
     private void OnExit(object? sender, EventArgs e)
     {
-        foreach (var (variable, value) in systemEnvs)
+        foreach (var (variable, value) in _systemEnvs)
             Environment.SetEnvironmentVariable(variable, null);
-        systemEnvs.Clear();
+        _systemEnvs.Clear();
 
-        onExited(this);
+        _onExited(this);
     }
 }

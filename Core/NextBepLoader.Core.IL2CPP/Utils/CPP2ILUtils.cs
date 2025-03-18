@@ -4,10 +4,10 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace NextBepLoader.Core.IL2CPP.Utils;
 
-public static class CPP2ILUtils
+internal static class CPP2ILUtils
 {
-    public static ManualLogSource? BeLog;
-    public static ILogger? MSLogger;
+    private static ManualLogSource? BeLog;
+    private static ILogger? MSLogger;
 
     static CPP2ILUtils()
     {
@@ -33,7 +33,7 @@ public static class CPP2ILUtils
         };
     }
 
-    public static void SetLogger(ManualLogSource? beLog, ILogger? msLogger = null)
+    internal static void SetLogger(ManualLogSource? beLog, ILogger? msLogger = null)
     {
         if (beLog != null)
             BeLog = beLog;

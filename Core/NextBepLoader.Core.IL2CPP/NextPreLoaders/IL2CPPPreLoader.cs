@@ -11,7 +11,7 @@ using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, UnityInfo unityInfo) : BasePreLoader
+internal class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger, UnityInfo unityInfo) : BasePreLoader
 {
     public override PreLoadPriority Priority => PreLoadPriority.VeryLast;
 

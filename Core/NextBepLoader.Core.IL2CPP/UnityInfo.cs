@@ -16,7 +16,7 @@ public class UnityInfo
 
 
     // Adapted from https://github.com/SamboyCoding/Cpp2IL/blob/development/LibCpp2IL/LibCpp2IlMain.cs
-    public static readonly ManagerLookup[] DefaultManagerVersionLookup =
+    private static readonly ManagerLookup[] DefaultManagerVersionLookup =
     [
         new("globalgamemanagers", 0x14, 0x30),
         new("data.unity3d", 0x12),
@@ -25,7 +25,7 @@ public class UnityInfo
 
     public static UnityInfo Instance => instance ??= new UnityInfo();
 
-    public List<ManagerLookup> ManagerVersionLookup { get; } = [..DefaultManagerVersionLookup];
+    private List<ManagerLookup> ManagerVersionLookup { get; } = [..DefaultManagerVersionLookup];
 
     /// <summary>
     ///     Version of the Unity player
@@ -34,12 +34,12 @@ public class UnityInfo
     ///     Because BepInEx can execute very early, the exact Unity version might not be available in early
     ///     bootstrapping phases. The version should be treated as an estimation of the actual version of the Unity player.
     /// </remarks>
-    public UnityVersion? Version { get; private set; }
+    private UnityVersion? Version { get; set; }
 
-    public void InitializeFormPaths() =>
+    internal void InitializeFormPaths() =>
         Initialize(Paths.ExecutablePath, Paths.GameDataPath);
 
-    public void Initialize(string unityPlayerPath, string gameDataPath)
+    internal void Initialize(string unityPlayerPath, string gameDataPath)
     {
         var playerPath = Path.GetFullPath(unityPlayerPath);
         var dataPath = Path.GetFullPath(gameDataPath);

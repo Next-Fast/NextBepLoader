@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger, IProviderManager providerManager) : BasePreLoader
+internal sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger, IProviderManager providerManager) : BasePreLoader
 {
     public Action<IL2CPPHooker> OnActiveSceneChanged;
     internal NativeHook RuntimeInvokeDetour { get; set; }

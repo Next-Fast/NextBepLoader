@@ -4,16 +4,17 @@ using AssetRipper.Primitives;
 
 namespace NextBepLoader.Core.IL2CPP.Utils;
 
-public class ManagerLookup(string fileName, params int[] lookupOffsets)
+internal class ManagerLookup(string fileName, params int[] lookupOffsets)
 {
+    // ReSharper disable once NotAccessedField.Global
     public bool Looked;
 
-    public string FileRootPath { get; set; }
-    public string FileName { get; } = fileName;
-    public string FilePath => Path.Combine(FileRootPath, FileName);
-    public int[] LookupOffsets { get; } = lookupOffsets;
+    private string FileRootPath { get; set; }
+    private string FileName { get; } = fileName;
+    private string FilePath => Path.Combine(FileRootPath, FileName);
+    private int[] LookupOffsets { get; } = lookupOffsets;
 
-    public UnityVersion? LookupVersion { get; private set; }
+    private UnityVersion? LookupVersion { get; set; }
 
     public string? Engine { get; private set; }
 

@@ -7,7 +7,7 @@ namespace NextBepLoader.Core;
 
 public abstract class LoaderPathBase
 {
-    private readonly List<string> checkList = [];
+    private readonly List<string> _checkList = [];
 
     /// <summary>
     ///     The directory that the currently executing process resides in.
@@ -101,6 +101,8 @@ public abstract class LoaderPathBase
     public string? SystemDir { get; set; }
 
     public string LogsDir { get; set; }
+    
+    public string DataDir { get; set; }
 
     public virtual void InitPaths(bool autoCheckCreate = false)
     {
@@ -140,6 +142,7 @@ public abstract class LoaderPathBase
         CacheDataDir = SetPath(CacheDataDir, true, false, LoaderRootPath, "CacheData");
         TempDir = SetPath(TempDir, true, false, LoaderRootPath, "Temp");
         LogsDir = SetPath(LogsDir, true, false, LoaderRootPath, "Logs");
+        DataDir = SetPath(DataDir, true, false, LoaderRootPath, "Data");
 
         if (autoCheckCreate)
             CheckCreateDirectories();
@@ -147,7 +150,7 @@ public abstract class LoaderPathBase
 
     public virtual void CheckCreateDirectories()
     {
-        foreach (var path in checkList.Where(path => !Directory.Exists(path))) Directory.CreateDirectory(path);
+        foreach (var path in _checkList.Where(path => !Directory.Exists(path))) Directory.CreateDirectory(path);
     }
 
     public string SetPath(string org, bool check, bool root = true, params string[] pathNames)
@@ -160,7 +163,7 @@ public abstract class LoaderPathBase
                                               current1 == string.Empty ? path : Path.Combine(current1, path));
         var fullPath = root ? Path.Combine(GameRootPath!, current) : current;
         if (check)
-            checkList.Add(fullPath);
+            _checkList.Add(fullPath);
         return fullPath;
     }
 }

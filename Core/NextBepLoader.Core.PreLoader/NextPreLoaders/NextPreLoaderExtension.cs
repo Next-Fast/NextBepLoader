@@ -67,6 +67,11 @@ public static class NextPreLoaderExtension
         return true;
     }
 
+    public static IServiceCollection AddPreLoader<T>(this IServiceCollection collection) where T : BasePreLoader
+    {
+        return collection.AddSingleton<BasePreLoader, T>();
+    }
+
     public static void SortLoaders(this List<BasePreLoader> preLoaders) =>
         preLoaders.Sort((x, y) =>
         {

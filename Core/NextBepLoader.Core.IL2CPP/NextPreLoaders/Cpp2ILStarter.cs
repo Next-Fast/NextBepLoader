@@ -16,14 +16,14 @@ using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
-public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, UnityInfo unityInfo) : BasePreLoader
+internal class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, UnityInfo unityInfo) : BasePreLoader
 {
-    private IL2CPPCheckEventArg il2CPPCheckEventArg;
+    private IL2CPPCheckEventArg _il2CPPCheckEventArg;
     public override Type[] WaitLoadLoader => [typeof(HashComputer)];
 
     public override void PreLoad(PreLoadEventArg arg)
     {
-        il2CPPCheckEventArg = env.GetOrCreateEventArgs<IL2CPPCheckEventArg>();
+        _il2CPPCheckEventArg = env.GetOrCreateEventArgs<IL2CPPCheckEventArg>();
         InstructionSetRegistry.RegisterInstructionSet<X86InstructionSet>(DefaultInstructionSets.X86_32);
         InstructionSetRegistry.RegisterInstructionSet<X86InstructionSet>(DefaultInstructionSets.X86_64);
         LibCpp2IlBinaryRegistry.RegisterBuiltInBinarySupport();
@@ -31,7 +31,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
 
     public override void Start()
     {
-        if (il2CPPCheckEventArg is { UpdateIL2CPPInteropAssembly: false }) return;
+        if (_il2CPPCheckEventArg is { UpdateIL2CPPInteropAssembly: false }) return;
         logger.LogInformation("Running Cpp2IL to generate dummy assemblies");
         CPP2ILUtils.SetLogger(null, logger);
 
@@ -56,7 +56,7 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
         });
         logger.LogInformation("Cpp2IL finished in {time}", runTime);
 
-        if (il2CPPCheckEventArg.CacheCPP2ILAssembly)
+        if (_il2CPPCheckEventArg.CacheCPP2ILAssembly)
         {
             var id = 0;
             var time = CoreUtils.StartStopwatch(() =>
@@ -67,6 +67,6 @@ public class Cpp2ILStarter(INextBepEnv env, ILogger<Cpp2ILStarter> logger, Unity
             logger.LogInformation("CPP2IL Cache Write Time {time}", time);
         }
 
-        il2CPPCheckEventArg.ResolverAssemblies = result;
+        _il2CPPCheckEventArg.ResolverAssemblies = result;
     }
 }

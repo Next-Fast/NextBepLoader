@@ -4,7 +4,7 @@ using NextBepLoader.Core.IL2CPP.Hooks.Dobby;
 
 namespace NextBepLoader.Core.IL2CPP.Hooks;
 
-public class Il2CppDetourFactory : IDetourFactory
+internal class Il2CppDetourFactory : IDetourFactory
 {
     private static IDetourFactory? currentFactory;
 

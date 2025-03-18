@@ -63,25 +63,6 @@ public static class MetadataHelper
     public static T[] GetAttributes<T>(MemberInfo member) where T : Attribute =>
         (T[])member.GetCustomAttributes(typeof(T), true);
 
-    /// <summary>
-    ///     Retrieves the dependencies of the specified plugin type.
-    /// </summary>
-    /// <param name="plugin">The plugin type.</param>
-    /// <returns>A list of all plugin types that the specified plugin type depends upon.</returns>
-    public static IEnumerable<PluginDependency> GetDependencies(this Type plugin) =>
-        plugin.GetCustomAttributes(typeof(PluginDependency), true).Cast<PluginDependency>();
-
-
-    public static IEnumerable<PluginCompatibility> CompatibilityFromAsmType(this TypeDefinition td)
-    {
-        var attrs = GetCustomAttributes<PluginCompatibility>(td, true);
-        return attrs.Select(customAttribute =>
-        {
-            var dependencyGuid = (string)customAttribute.Signature!.NamedArguments[0].Argument.Element!;
-            return new PluginCompatibility(dependencyGuid);
-        }).ToList();
-    }
-
     public static PluginMetadata? GetMetadataFromAsmType(this TypeDefinition td)
     {
         var attr = GetCustomAttributes<PluginMetadata>(td, false).FirstOrDefault();

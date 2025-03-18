@@ -8,6 +8,8 @@ using NextBepLoader.Core.PreLoader.Bootstrap;
 namespace NextBepLoader.Deskstop;
 
 public sealed class DesktopProviderManager(
+    StartupLoadProvider startupLoadProvider,
+    PluginLoadProvider pluginLoadProvider,
     IServiceProvider serviceProvider,
     DotNetLoader dotNetLoader) : IProviderManager, IOnLoadStart
 {
@@ -17,15 +19,11 @@ public sealed class DesktopProviderManager(
 
     public Task OnLoadStart()
     {
-        foreach (var provider in MainServiceProvider.GetServices<IProvider>())
-        {
-            ProviderLoader.AddProvider(provider);
-        }
-
-        ProviderLoader
-            .LoadFormTypeLoader(dotNetLoader)
-            .InitAll(this)
-            .RunAll();
+        ProviderLoader.AddProvider(startupLoadProvider)
+                      .AddProvider(pluginLoadProvider)
+                      .LoadFormTypeLoader(dotNetLoader)
+                      .InitAll(this)
+                      .RunAll();
 
         return Task.CompletedTask;
     }

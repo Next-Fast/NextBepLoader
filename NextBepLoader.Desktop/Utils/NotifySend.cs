@@ -32,7 +32,7 @@ internal static class NotifySend
             {
                 summary,
                 body,
-                "--app-name=BepInEx"
+                "--app-name=NextBepLoader"
             }
         };
 

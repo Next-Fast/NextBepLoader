@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using AsmResolver.PE.File;
 using AssemblyDefinition = AsmResolver.DotNet.AssemblyDefinition;
 
@@ -59,7 +59,7 @@ public class AssemblyBuildInfo
                     NetFrameworkVersion = new Version(value.Substring("Version=v".Length));
                 }
                 catch { }
-    }*/
+    }#1#
 
     public static AssemblyBuildInfo DetermineInfo(AssemblyDefinition assemblyDefinition)
     {
@@ -100,7 +100,7 @@ public class AssemblyBuildInfo
             x64
             MainModule.Architecture: AMD64
             MainModule.Attributes: ILOnly
-        */
+        #1#
 
         var architecture = module.MachineType;
 
@@ -151,5 +151,5 @@ public class AssemblyBuildInfo
             return $".NET {frameworkType} {NetFrameworkVersion}, AnyCPU ({(Is64Bit ? "64" : "32")}-bit preferred)";
 
         return $".NET {frameworkType} {NetFrameworkVersion}, {(Is64Bit ? "x64" : "x86")}";
-    }*/
-}
+    }#1#
+}*/

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NextBepLoader.Core.IL2CPP.Logging;
 
-public class IL2CPPUnityLogSource : ILogSource
+internal class IL2CPPUnityLogSource : ILogSource
 {
     public IL2CPPUnityLogSource()
     {

@@ -1,10 +1,12 @@
 using System.Text;
 using NextBepLoader.Core;
+using NextBepLoader.Core.IL2CPP;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Logging.DefaultListener;
 using NextBepLoader.Core.Logging.Extensions;
 using NextBepLoader.Core.Logging.Interface;
+using NextBepLoader.Core.Utils;
 using NextBepLoader.Deskstop.Console.Windows;
 
 namespace NextBepLoader.Deskstop.Console;

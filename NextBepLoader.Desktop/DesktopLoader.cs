@@ -68,14 +68,11 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
 
         LoaderVersion = new Version(1, 0, 0);
         Paths.InitPaths(true);
+        
+        ConsoleManager.Divider?.SetConsoleTitle($"NextBepLoader Desktop {LoaderVersion} {Paths.ProcessName}");
 
         DotNetLoader.AddAssembliesFormDirector(Paths.PluginPath);
         DotNetLoader.AddAssembliesFormDirector(Paths.ProviderDirectory);
-
-        DotNetLoader.OnLoadType = (definition, assemblyDefinition) =>
-        {
-            Logger.LogInfo("Load Type: " + definition.FullName);
-        };
 
         Collection = BuildService();
         MainServices = Collection.BuildOrCreateProvider();
@@ -93,15 +90,16 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
             .AddSingleton(this)
             .AddSingleton(UnityInfo.Instance)
             .AddSingleton<PluginInfoManager>()
-            .AddSingleton<BasePreLoader, ResolvePreLoad>()
-            .AddSingleton<BasePreLoader, Cpp2ILStarter>()
-            .AddSingleton<BasePreLoader, HashComputer>()
-            .AddSingleton<BasePreLoader, IL2CPPHooker>()
-            .AddSingleton<BasePreLoader, UnityBasePreDownloader>()
-            .AddSingleton<BasePreLoader, IL2CPPInteropStarter>()
-            .AddSingleton<BasePreLoader, IL2CPPPreLoader>()
-            .AddSingleton<IProvider, PluginLoadProvider>()
-            .AddSingleton<IProvider, StartupLoadProvider>()
+            .AddPreLoader<ResolvePreLoad>()
+            .AddPreLoader<Cpp2ILStarter>()
+            .AddPreLoader<HashComputer>()
+            .AddPreLoader<IL2CPPHooker>()
+            .AddPreLoader<UnityBasePreDownloader>()
+            .AddPreLoader<IL2CPPInteropStarter>()
+            .AddPreLoader<IL2CPPPreLoader>()
+            .AddPreLoader<LoggingStarter>()
+            .AddSingleton<StartupLoadProvider>()
+            .AddSingleton<PluginLoadProvider>()
             .SingleService<INextBepEnv, DesktopBepEnv>()
             .SingleService<IProviderManager, DesktopProviderManager>()
             .SingleService<IPreLoaderManager, DesktopPreLoadManager>()
