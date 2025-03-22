@@ -10,6 +10,7 @@ public class DesktopBepEnv : INextBepEnv, IOnLoadStart
     private readonly Dictionary<string, string> _systemEnvs = new();
 
     public Process CurrentProcess { get; set; }
+    public int Priority => 0;
 
 
     public INextBepEnv RegisterSystemEnv(string variable, string value)

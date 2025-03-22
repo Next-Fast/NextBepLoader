@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using AsmResolver.DotNet;
 using HarmonyLib;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,27 +63,6 @@ public static class CoreUtils
         watch.Stop();
         return watch.Elapsed;
     }
-
-    public static IServiceCollection AddOnStart<T>(this IServiceCollection collection) where T : class, IOnLoadStart =>
-        collection.AddSingleton<IOnLoadStart, T>();
-
-    public static IServiceCollection AddOnStart<TInterface, TClass>(this IServiceCollection collection)
-        where TClass : class, TInterface, IOnLoadStart where TInterface : class =>
-        collection.AddSingleton<TInterface, TClass>()
-                  .AddSingleton<IOnLoadStart>(n => n.GetRequiredService<TClass>());
-
-    public static IServiceCollection AddOnStart<TInterface, TClass>(this IServiceCollection collection,
-                                                                    params object[] parameters)
-        where TClass : class, TInterface, IOnLoadStart
-        where TInterface : class
-        => collection
-           .AddSingleton<TInterface,
-               TClass>(provider => ActivatorUtilities.CreateInstance<TClass>(provider, parameters))
-           .AddOnStartFormGet<TClass>();
-
-    public static IServiceCollection AddOnStartFormGet<T>(this IServiceCollection collection)
-        where T : class, IOnLoadStart =>
-        collection.AddSingleton<IOnLoadStart>(n => n.GetRequiredService<T>());
 
     public static void DeleteAllFiles(string dir)
     {
@@ -159,20 +139,25 @@ public static class CoreUtils
             type.BaseType.Resolve().HasBase(baseType);
     }
 
-    public static IServiceProvider TryRun<T>(this IServiceProvider provider) where T : IOnLoadStart
+    public static IServiceProvider TryRunOnStart(this IServiceProvider provider)
     {
-        try
+        Task.Run(async () =>
         {
-            var service = provider.GetService<T>();
-            if (service is not null)
-                service.OnLoadStart();
-            else
-                Logger.LogError($"Service {typeof(T)} is null");
-        }
-        catch (Exception e)
-        {
-            Logger.LogError($"Error Try Run {typeof(T)} Exception:\n{e}");
-        }
+            try
+            {
+                var allStart = provider.GetServices<IOnLoadStart>().ToList();
+                allStart.Sort((x, y) => x.Priority.CompareTo(y.Priority));
+                foreach (var start in allStart)
+                {
+                    await start.OnLoadStart();
+                    Logger.LogInfo($"On LoadStart:{start.GetType().Name}");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning(e);
+            }
+        });
 
         return provider;
     }
@@ -180,10 +165,20 @@ public static class CoreUtils
     public static IServiceCollection SingleService<TInterface, TClass>(this IServiceCollection collection)
         where TClass : class, TInterface where TInterface : class
     {
-        collection
+        return collection
             .AddSingleton<TClass>()
             .AddSingleton<TInterface, TClass>(provider => provider.GetRequiredService<TClass>());
+    }
+    
+    public static IServiceCollection SingleOnStartService<TClass>(this IServiceCollection collection) where TClass : class, IOnLoadStart
+    {
+        return collection.AddSingleton<TClass>()
+                         .AddSingleton<IOnLoadStart>(provider => provider.GetRequiredService<TClass>());
+    }
 
-        return collection;
+    public static IServiceCollection SingleOnStartService<TInterface, TClass>(this IServiceCollection collection) where TClass : class, IOnLoadStart, TInterface where TInterface : class
+    {
+        return collection.SingleService<TInterface, TClass>()
+                         .AddSingleton<IOnLoadStart>(provider => provider.GetRequiredService<TClass>());
     }
 }

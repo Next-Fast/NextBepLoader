@@ -15,7 +15,7 @@ public sealed class DesktopProviderManager(
 {
     public List<IProvider> Providers => ProviderLoader.Providers;
     private ProviderLoader ProviderLoader { get; } = new(serviceProvider);
-    public int Priority => 1;
+    public int Priority => 2;
 
     public Task OnLoadStart()
     {

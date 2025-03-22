@@ -16,7 +16,7 @@ public abstract class LoaderBase<T> : ILoaderBase where T : LoaderBase<T>, new()
 
     public virtual INextServiceManager ServiceManager { get; set; }
 
-    public abstract LoaderPathBase Paths { get; set; }
+    public abstract LoaderPathBase DesktopPaths { get; set; }
     public abstract LoaderPlatformType LoaderType { get; }
     public virtual Version LoaderVersion { get; set; } = new(1, 0, 0);
 
@@ -52,7 +52,7 @@ public interface ILoaderBase
 {
     public INextServiceManager ServiceManager { get; set; }
 
-    public LoaderPathBase Paths { get; set; }
+    public LoaderPathBase DesktopPaths { get; set; }
     public LoaderPlatformType LoaderType { get; }
     public Version LoaderVersion { get; set; }
 

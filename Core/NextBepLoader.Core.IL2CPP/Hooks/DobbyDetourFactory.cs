@@ -1,10 +1,11 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices;
 using MonoMod.Core;
 using NextBepLoader.Core.IL2CPP.Hooks.Dobby;
 
 namespace NextBepLoader.Core.IL2CPP.Hooks;
 
-internal class Il2CppDetourFactory : IDetourFactory
+internal class DobbyDetourFactory : IDetourFactory
 {
     private static IDetourFactory? currentFactory;
 
@@ -14,11 +15,16 @@ internal class Il2CppDetourFactory : IDetourFactory
         {
             if (currentFactory != null)
                 return currentFactory;
-
-            var hasDobby = File.Exists(Path.Combine(Paths.CoreDirectory, "dobby.dll"));
-            currentFactory = hasDobby
-                                 ? new Il2CppDetourFactory()
-                                 : DetourFactory.Current;
+            
+            var dobbyPath = Path.Combine(Paths.CoreDirectory, "dobby.dll");
+            if (NativeLibrary.TryLoad(dobbyPath, out var _))
+            {
+                currentFactory = new DobbyDetourFactory();
+            }
+            else
+            {
+                currentFactory = DetourFactory.Current;
+            }
 
             return currentFactory;
         }

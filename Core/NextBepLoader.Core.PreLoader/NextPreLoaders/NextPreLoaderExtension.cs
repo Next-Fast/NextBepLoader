@@ -86,22 +86,5 @@ public static class NextPreLoaderExtension
 
             return -1;
         });
-
-    public static IServiceCollection AddStartRunner(this IServiceCollection collection)
-    {
-        collection.AddSingleton<OnStartRunner>();
-        return collection;
-    }
-
-    public static void StartRunner(this IServiceProvider provider)
-    {
-        var startRunner = provider.GetService<OnStartRunner>();
-        if (startRunner == null)
-        {
-            Logger.LogError("OnStartRunner is null");
-            return;
-        }
-
-        startRunner.Run(provider);
-    }
+    
 }

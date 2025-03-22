@@ -5,12 +5,12 @@ using NextBepLoader.Core.Contract;
 using NextBepLoader.Core.IL2CPP;
 using NextBepLoader.Core.IL2CPP.NextPreLoaders;
 using NextBepLoader.Core.LoaderInterface;
-using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.Logging.DefaultListener;
 using NextBepLoader.Core.Logging.Extensions;
 using NextBepLoader.Core.Logging.Interface;
 using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.PreLoader.Bootstrap;
+using NextBepLoader.Core.PreLoader.Event;
 using NextBepLoader.Core.PreLoader.NextPreLoaders;
 using NextBepLoader.Core.Utils;
 using NextBepLoader.Deskstop.Console;
@@ -37,14 +37,15 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
     };
 
     public readonly PreLoadEventArg PreLoadEventArg = new();
-    public override LoaderPathBase Paths { get; set; } = new DesktopPath();
+    public override LoaderPathBase DesktopPaths { get; set; } = new DesktopPath();
     public override LoaderPlatformType LoaderType => LoaderPlatformType.Desktop;
     internal NextServiceCollection Collection { get; set; }
 
     public override IConsoleManager ConsoleManager => DesktopConsoleManager.Instance;
 
 
-    public ILogListener? DiskLogListener { get; private set; }
+    public ILogListener? LastLogListener { get; private set; }
+    public ILogListener? TimeLogListener { get; private set; }
 
     private static bool AssemblyFilter(AssemblyDefinition assembly)
     {
@@ -61,24 +62,24 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
     {
         PlatformUtils.SetDesktopPlatformVersion();
         RedirectStdErrFix.Apply();
-
-        DiskLogListener = new DiskListener("./LatestLog.log").Register();
+        
+        DesktopPaths.InitPaths(true);
+        LoaderVersion = typeof(DesktopLoader).Assembly.GetName().Version ?? new Version(1,0,0);
+        
+        LastLogListener = DiskListener.CreateDiskListener(Paths.LastLogPath);
+        TimeLogListener = DiskListener.CreateDiskListener(Paths.TimeStampLogPath);
+        
         ConsoleManager.Init(new ConsoleConfig());
         ConsoleManager.CreateConsole();
-
-        LoaderVersion = new Version(1, 0, 0);
-        Paths.InitPaths(true);
         
-        ConsoleManager.Divider?.SetConsoleTitle($"NextBepLoader Desktop {LoaderVersion} {Paths.ProcessName}");
+        ConsoleManager.Divider?.SetConsoleTitle($"NextBepLoader Desktop {LoaderVersion} {DesktopPaths.ProcessName}");
 
-        DotNetLoader.AddAssembliesFormDirector(Paths.PluginPath);
-        DotNetLoader.AddAssembliesFormDirector(Paths.ProviderDirectory);
+        DotNetLoader.AddAssembliesFormDirector(DesktopPaths.PluginPath);
 
         Collection = BuildService();
-        MainServices = Collection.BuildOrCreateProvider();
-        MainServices.TryRun<DesktopBepEnv>()
-                    .TryRun<DesktopPreLoadManager>()
-                    .TryRun<DesktopProviderManager>();
+        MainServices = Collection
+                       .BuildOrCreateProvider()
+                       .TryRunOnStart();
     }
 
     public NextServiceCollection BuildService()
@@ -100,9 +101,10 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
             .AddPreLoader<LoggingStarter>()
             .AddSingleton<StartupLoadProvider>()
             .AddSingleton<PluginLoadProvider>()
-            .SingleService<INextBepEnv, DesktopBepEnv>()
-            .SingleService<IProviderManager, DesktopProviderManager>()
-            .SingleService<IPreLoaderManager, DesktopPreLoadManager>()
+            .SingleOnStartService<INextBepEnv, DesktopBepEnv>()
+            .SingleOnStartService<IPreLoaderManager, DesktopPreLoadManager>()
+            .SingleOnStartService<IProviderManager, DesktopProviderManager>()
+            .SingleOnStartService<EventManager>()
             .AddTransient<HttpClient>()
             .AddNextLogger()
             .AddTraceLogSource();

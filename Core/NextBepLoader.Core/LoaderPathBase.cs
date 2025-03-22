@@ -79,8 +79,7 @@ public abstract class LoaderPathBase
     ///     List of directories from where Mono will search assemblies before assembly resolving is invoked.
     /// </summary>
     public string[]? DllSearchPaths { get; set; }
-
-    public string ProviderDirectory { get; set; }
+    
 
     public string UnityBaseDirectory { get; set; }
 
@@ -119,7 +118,6 @@ public abstract class LoaderPathBase
         CachePath = SetPath(CachePath, true, false, LoaderRootPath, "Cache");
         PluginPath = SetPath(PluginPath, true, true, "Plugins");
         CoreDirectory = SetPath(CoreDirectory, true, false, LoaderRootPath, "Core");
-        ProviderDirectory = SetPath(ProviderDirectory, true, true, "Providers");
         CoreAssemblyPath = typeof(Paths).Assembly.Location;
         UnityBaseDirectory = SetPath(UnityBaseDirectory, true, false, LoaderRootPath, "Unity-Libs");
         IL2CPPInteropAssemblyDirectory =

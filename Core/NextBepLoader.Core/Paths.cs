@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using NextBepLoader.Core.Utils;
 
 namespace NextBepLoader.Core;
 
@@ -87,4 +88,10 @@ public static class Paths
     public static string CacheDataDir => MainInstance?.CacheDataDir ?? string.Empty;
 
     public static string LogsDir => MainInstance?.LogsDir ?? string.Empty;
+
+    public static string LastLogPath => GameRootPath == string.Empty ? "./LastLog.log" : Path.Combine(GameRootPath, "LastLog.log");
+    
+    public static string TimeStampLogPath => LogsDir == string.Empty
+                                                 ? string.Empty 
+                                                 : Path.Combine(LogsDir, $"Log_{CoreUtils.TimeStamp}.log");
 }

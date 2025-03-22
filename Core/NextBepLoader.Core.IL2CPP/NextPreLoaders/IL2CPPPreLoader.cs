@@ -37,7 +37,7 @@ internal class IL2CPPPreLoader(INextBepEnv env, ILogger<IL2CPPPreLoader> logger,
     public override void Start()
     {
         NativeLibrary.SetDllImportResolver(typeof(Il2CppInterop.Runtime.IL2CPP).Assembly, DllImportResolver);
-        DetourContext.SetGlobalContext(new DetourFactoryContext(new Il2CppDetourFactory()));
+        DetourContext.SetGlobalContext(new DetourFactoryContext(new DobbyDetourFactory()));
     }
 
     private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>

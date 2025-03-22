@@ -14,7 +14,7 @@ public sealed class DesktopPreLoadManager(
     DotNetLoader dotNetLoader) : IPreLoaderManager, IOnLoadStart
 {
     public List<BasePreLoader> PreLoaders { get; set; } = [];
-    public int Priority => 0;
+    public int Priority => 1;
 
     public async Task OnLoadStart()
     {

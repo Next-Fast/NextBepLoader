@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using NextBepLoader.Core.Logging.Extensions;
 using NextBepLoader.Core.Logging.Interface;
 using NextBepLoader.Core.Utils;
 
@@ -10,20 +11,34 @@ public class DiskListener(
     LogLevel logLevel = LogLevel.Fatal | LogLevel.Error | LogLevel.Warning | LogLevel.Message | LogLevel.Info)
     : ILogListener
 {
-    private readonly TextWriter? _logsWriter
-        = CreateWriter(Paths.LogsDir, $"{CoreUtils.TimeStamp}.log");
-
+    
     private readonly TextWriter? _writer
         = CreateWriter(path);
 
     public LogLevel LogLevelFilter => logLevel;
+
+    public static DiskListener? CreateDiskListener(string path, bool register = true)
+    {
+        if (path == string.Empty)
+        {
+            Logger.LogWarning("Log path is empty");
+            return null;
+        }
+        
+        var diskListener = new DiskListener(path);
+        if (!register) return diskListener;
+        
+        diskListener.Register();
+        Logger.LogInfo($"Register {path} DiskListener");
+
+        return diskListener;
+    }
 
     public void LogEvent(object sender, LogEventArgs eventArgs)
     {
         var text = eventArgs.ToString();
 
         _writer?.WriteLine(text);
-        _logsWriter?.WriteLine(text);
     }
 
     public void Dispose()

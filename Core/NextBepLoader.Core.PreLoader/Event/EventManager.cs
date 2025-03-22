@@ -10,6 +10,8 @@ public class EventManager(IServiceProvider serviceProvider) : IOnLoadStart
 {
     private readonly List<IOnEvent> _events = [];
     private bool _hasSort;
+    
+    public int Priority => 10;
 
     public EventManager RegisterEvent(IOnEvent eventHandler)
     {
