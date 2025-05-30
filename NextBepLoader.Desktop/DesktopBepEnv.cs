@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Text.Json;
+using NextBepLoader.Core;
 using NextBepLoader.Core.LoaderInterface;
 
 namespace NextBepLoader.Deskstop;
@@ -44,20 +46,26 @@ public class DesktopBepEnv : INextBepEnv, IOnLoadStart
     }
 
 
-    public Task OnLoadStart()
+    public void OnLoadStart()
     {
         CurrentProcess = Process.GetCurrentProcess();
 
         CurrentProcess.Exited += OnExit;
-        return Task.CompletedTask;
+        var dic = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(CachePath));
+        if (dic == null) return;
+        foreach (var (key, value) in dic)
+        {
+            RegisterSystemEnv(key, value);
+        }
     }
 
+    private static string CachePath => Path.Combine(Paths.CachePath, "SystemEnv.cache");
     private void OnExit(object? sender, EventArgs e)
     {
+        File.WriteAllText(CachePath, JsonSerializer.Serialize(_systemEnvs));
         foreach (var (variable, value) in _systemEnvs)
             Environment.SetEnvironmentVariable(variable, null);
         _systemEnvs.Clear();
-
         _onExited(this);
     }
 }

@@ -12,12 +12,8 @@ namespace NextBepLoader.Core.IL2CPP.NextPreLoaders;
 
 internal sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger, IProviderManager providerManager) : BasePreLoader
 {
-    public Action<IL2CPPHooker> OnActiveSceneChanged;
     internal NativeHook RuntimeInvokeDetour { get; set; }
     public override Type[] WaitLoadLoader => [typeof(IL2CPPPreLoader)];
-
-    public override void PreLoad(PreLoadEventArg arg) =>
-        OnActiveSceneChanged += _ => { providerManager.OnGameActive(); };
 
     public override void Start()
     {
@@ -54,8 +50,9 @@ internal sealed class IL2CPPHooker(ILogger<IL2CPPHooker> logger, IProviderManage
             {
                 Logger.Sources.Add(new IL2CPPUnityLogSource());
                 Application.CallLogCallback("Test call after applying unity logging hook", "", LogType.Assert, true);
-
-                OnActiveSceneChanged.Invoke(this);
+                
+                providerManager.OnGameActive();
+                logger.LogInformation("OnActiveSceneChanged called");
                 unhook = true;
             }
             catch (Exception ex)

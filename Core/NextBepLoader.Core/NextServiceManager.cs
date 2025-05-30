@@ -80,6 +80,11 @@ public class NextServiceCollection : ServiceCollection
     private NextServiceProvider? Provider { get; set; }
     public ServiceFastInfo? FastInfo { get; set; }
 
+    public NextServiceCollection Copy(NextServiceCollection collection)
+    {
+        return Copy(collection, collection.BuildOrCreateProvider());
+    }
+    
     public NextServiceCollection Copy(IServiceCollection collection, IServiceProvider provider)
     {
         foreach (var service in collection.Where(n => n.Lifetime == ServiceLifetime.Singleton && !n.IsKeyedService))
@@ -87,7 +92,7 @@ public class NextServiceCollection : ServiceCollection
             {
                 if (Contains(service)) continue;
                 var fullName = service.ServiceType.FullName ?? string.Empty;
-                if (fullName.StartsWith("System") || fullName.StartsWith("Microsoft")) continue;
+                /*if (fullName.StartsWith("System") || fullName.StartsWith("Microsoft")) continue;*/
                 var get = provider.GetService(service.ServiceType);
                 if (get == null) continue;
                 this.AddSingleton(service.ServiceType, get);

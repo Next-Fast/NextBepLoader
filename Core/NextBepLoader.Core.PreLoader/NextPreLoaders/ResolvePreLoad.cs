@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -34,9 +35,28 @@ public class ResolvePreLoad : BasePreLoader
 
     public override void Start()
     {
+        // Cecil 0.11 requires one to manually set up list of trusted assemblies for assembly resolving
+        // The main BCL path
+        AddCecilPlatformAssemblies(AppDomain.CurrentDomain, Paths.ManagedPath);
+        // The parent path -> .NET has some extra managed DLLs in there
+        AddCecilPlatformAssemblies(AppDomain.CurrentDomain, Path.GetDirectoryName(Paths.ManagedPath)!);
         LoadContext = AssemblyLoadContext.Default;
         LoadContext.Resolving += LocalResolve;
         LoadContext.ResolvingUnmanagedDll += LocalResolveUnmanaged;
+    }
+
+    private const string TRUSTED_PLATFORM_ASSEMBLIES = "TRUSTED_PLATFORM_ASSEMBLIES";
+    private static void AddCecilPlatformAssemblies(AppDomain appDomain, string assemblyDir)
+    {
+        if (!Directory.Exists(assemblyDir))
+            return;
+        // Cecil 0.11 requires one to manually set up list of trusted assemblies for assembly resolving
+        var curTrusted = appDomain.GetData(TRUSTED_PLATFORM_ASSEMBLIES) as string;
+        var addTrusted = string.Join(Path.PathSeparator.ToString(),
+                                     Directory.GetFiles(assemblyDir, "*.dll",
+                                                        SearchOption.TopDirectoryOnly));
+        var newTrusted = curTrusted == null ? addTrusted : $"{curTrusted}{Path.PathSeparator}{addTrusted}";
+        appDomain.SetData(TRUSTED_PLATFORM_ASSEMBLIES, newTrusted);
     }
 
     private IntPtr LocalResolveUnmanaged(Assembly assembly, string name)

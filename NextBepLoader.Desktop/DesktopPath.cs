@@ -18,8 +18,8 @@ public class DesktopPath : LoaderPathBase
         ProcessName = Path.GetFileNameWithoutExtension(ExecutablePath)!;
         GameRootPath = PlatformDetection.OS.Is(OSKind.OSX)
                            ? Utility.ParentDirectory(ExecutablePath, 4)
-                           : Path.GetDirectoryName(ExecutablePath);
-        ManagedPath = EnvVars.DOORSTOP_MANAGED_FOLDER_DIR ?? string.Empty;
+                           : Path.GetDirectoryName(ExecutablePath); 
+        ManagedPath = EnvVars.DOORSTOP_MANAGED_FOLDER_DIR ?? Path.Combine(GameDataPath, "Managed");
         DllSearchPaths = EnvVars.DOORSTOP_DLL_SEARCH_DIRS.Concat([ManagedPath]).Distinct().ToArray();
         LoaderAssemblyPath = typeof(DesktopPath).Assembly.Location;
 

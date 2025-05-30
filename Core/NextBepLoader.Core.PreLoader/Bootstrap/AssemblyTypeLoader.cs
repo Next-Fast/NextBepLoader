@@ -11,11 +11,12 @@ namespace NextBepLoader.Core.PreLoader.Bootstrap;
 public abstract class BaseTypeLoader<TLoader, TType, TAssembly>
     where TAssembly : notnull where TLoader : BaseTypeLoader<TLoader, TType, TAssembly>
 {
-    public Dictionary<TAssembly, List<TType>> _LoadTypes = [];
+    public readonly Dictionary<TAssembly, List<TType>> _LoadTypes = [];
     public List<TAssembly> Assemblies { get; set; } = [];
     public Action<TType, TAssembly>? OnLoadType { get; set; } = null;
     public Func<TType, bool>? TypeFilter { get; set; } = null;
     public Func<TAssembly, bool>? AssemblyFilter { get; set; } = null;
+    private Func<TAssembly, bool>? CachedAssemblyFilter { get; set; } = null;
 
     public virtual TLoader AddAssembly(TAssembly assembly)
     {

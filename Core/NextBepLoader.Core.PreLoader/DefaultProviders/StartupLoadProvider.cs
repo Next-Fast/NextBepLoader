@@ -1,14 +1,14 @@
+using System;
+using System.Linq;
 using AsmResolver.DotNet;
 using Microsoft.Extensions.Logging;
-using NextBepLoader.Core;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
-using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.PreLoader.Bootstrap;
 
-namespace NextBepLoader.Deskstop;
+namespace NextBepLoader.Core.PreLoader.DefaultProviders;
 
-public class StartupLoadProvider(ILogger<StartupLoadProvider> logger, DotNetLoader dotNetLoader)
+public class StartupLoadProvider(ILogger<StartupLoadProvider> logger, DotNetLoader dotNetLoader, NextServiceManager serviceManager)
     : LoadProviderBase<IStartup>(dotNetLoader)
 {
     private static readonly string BaseFullName = typeof(ServiceStartupBase).FullName ?? "";
@@ -17,12 +17,11 @@ public class StartupLoadProvider(ILogger<StartupLoadProvider> logger, DotNetLoad
 
     public override void Init(IProviderManager manager)
     {
-        Service = NextServiceManager.Instance.CreateService("PluginService");
+        Service = serviceManager.CreateService("PluginService");
         if (Service == null)
             Logger.LogError("Service not found");
-
-        var collection = NextServiceManager.Instance.MainFastInfo.Collection;
-        Service?.Copy(collection, collection.BuildOrCreateProvider());
+        
+        Service?.Copy(serviceManager.MainFastInfo.Collection);
     }
 
     public override void Run()

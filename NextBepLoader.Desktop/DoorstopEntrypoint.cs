@@ -55,13 +55,13 @@ internal static class Entrypoint
     {
         if (PlatformDetection.OS.Is(OSKind.Windows))
         {
-            MessageBox.Show("Failed to start BepInEx", "BepInEx");
+            MessageBox.Show("Failed to start", "NextBepLoader");
             return true;
         }
 
         if (NotifySend.IsSupported)
         {
-            NotifySend.Send("Failed to start BepInEx", "Check logs for details");
+            NotifySend.Send("Failed to start NextBepLoader", "Check logs for details");
             return true;
         }
 

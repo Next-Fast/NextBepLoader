@@ -22,7 +22,11 @@ public static class CoreUtils
     public static readonly bool IsMono = PlatformDetection.Runtime == RuntimeKind.Mono;
 
     public static readonly bool IsCore = PlatformDetection.Runtime == RuntimeKind.CoreCLR;
-    public static string TimeStamp => DateTime.Now.ToString("G").Replace("/", "_").Replace(" ", "_").Replace(":", "_");
+    public static string TimeStamp => DateTime.Now
+                                              .ToString("G")
+                                              .Replace("/", "_")
+                                              .Replace(" ", "_")
+                                              .Replace(":", "_");
 
     public static string PlatformPostFix => PlatformPostFixGet();
     public static string PlatformGameAssemblyName => PlatformGameAssemblyNameGet();
@@ -43,6 +47,9 @@ public static class CoreUtils
 
     private static string PlatformPostFixGet()
     {
+        if (PlatformDetection.OS.Is(OSKind.Windows))
+            return "dll";
+        
         if (PlatformDetection.OS.Is(OSKind.Android))
             return "so";
 
@@ -141,23 +148,21 @@ public static class CoreUtils
 
     public static IServiceProvider TryRunOnStart(this IServiceProvider provider)
     {
-        Task.Run(async () =>
+
+        try
         {
-            try
+            var allStart = provider.GetServices<IOnLoadStart>().ToList();
+            allStart.Sort((x, y) => x.Priority.CompareTo(y.Priority));
+            foreach (var start in allStart)
             {
-                var allStart = provider.GetServices<IOnLoadStart>().ToList();
-                allStart.Sort((x, y) => x.Priority.CompareTo(y.Priority));
-                foreach (var start in allStart)
-                {
-                    await start.OnLoadStart();
-                    Logger.LogInfo($"On LoadStart:{start.GetType().Name}");
-                }
+                start.OnLoadStart();
+                Logger.LogInfo($"On LoadStart:{start.GetType().Name}");
             }
-            catch (Exception e)
-            {
-                Logger.LogWarning(e);
-            }
-        });
+        }
+        catch (Exception e)
+        {
+            Logger.LogWarning(e);
+        }
 
         return provider;
     }

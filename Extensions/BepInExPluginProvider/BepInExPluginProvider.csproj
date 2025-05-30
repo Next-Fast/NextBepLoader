@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../../Core/NextBepLoader.Core.PreLoader/NextBepLoader.Core.PreLoader.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.735" />
+    </ItemGroup>
+</Project>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AsmResolver.DotNet;
 using NextBepLoader.Core.LoaderInterface;
@@ -11,6 +12,15 @@ public abstract class LoadProviderBase<TPlugin> : IProvider
     public readonly DotNetLoader _DotNetLoader;
     public readonly FastTypeFinder Finder = new();
     public List<TPlugin> AllSelect = [];
+
+    protected LoadProviderBase(Func<AssemblyDefinition, bool> assemblyFilter)
+    {
+        Instance = this;
+        _DotNetLoader = new DotNetLoader
+        {
+            AssemblyFilter = assemblyFilter
+        };
+    }
 
     protected LoadProviderBase(DotNetLoader loader)
     {

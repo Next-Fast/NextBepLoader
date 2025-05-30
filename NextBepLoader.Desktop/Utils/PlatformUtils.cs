@@ -1,6 +1,8 @@
 using System.Runtime.InteropServices;
 using MonoMod.Utils;
 using NextBepLoader.Core.Utils;
+using Vanara.PInvoke;
+
 // ReSharper disable InconsistentNaming
 
 namespace NextBepLoader.Deskstop.Utils;
@@ -19,12 +21,6 @@ internal static class PlatformUtils
     [DllImport("ntdll.dll", SetLastError = true)]
     private static extern bool RtlGetVersion(ref WindowsOSVersionInfoExW versionInfo);
 
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    private static extern IntPtr LoadLibrary(string libraryName);
-
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
-
     /// <summary>
     ///     Recreation of MonoMod's PlatformHelper.DeterminePlatform method, but with libc calls instead of creating processes.
     /// </summary>
@@ -32,23 +28,25 @@ internal static class PlatformUtils
     {
         if (PlatformDetection.OS.Is(OSKind.Windows))
         {
+#pragma warning disable CA1416
             var windowsVersionInfo = new WindowsOSVersionInfoExW();
             RtlGetVersion(ref windowsVersionInfo);
 
             WindowsVersion = new Version((int)windowsVersionInfo.dwMajorVersion,
                                          (int)windowsVersionInfo.dwMinorVersion, 0,
                                          (int)windowsVersionInfo.dwBuildNumber);
-
-            var ntDll = LoadLibrary("ntdll.dll");
+            
+            var ntDll = Kernel32.LoadLibrary("ntdll.dll");
             if (ntDll != IntPtr.Zero)
             {
-                var wineGetVersion = GetProcAddress(ntDll, "wine_get_version");
+                var wineGetVersion = Kernel32.GetProcAddress(ntDll, "wine_get_version");
                 if (wineGetVersion != IntPtr.Zero)
                 {
                     var getVersion = wineGetVersion.AsDelegate<GetWineVersionDelegate>()!;
                     WineVersion = getVersion();
                 }
             }
+#pragma warning restore CA1416
         }
 
         if (!PlatformDetection.OS.Is(OSKind.Linux)) return;

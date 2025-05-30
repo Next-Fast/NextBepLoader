@@ -41,14 +41,12 @@ public class EventManager(IServiceProvider serviceProvider) : IOnLoadStart
         return new EmptyEventResult();
     }
 
-    public Task OnLoadStart()
+    public void OnLoadStart()
     {
         foreach (var @event in serviceProvider.GetServices<IOnEvent>())
         {
             RegisterEvent(@event);
         }
-        
-        return Task.CompletedTask;
     }
 }
 

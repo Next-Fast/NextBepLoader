@@ -16,7 +16,8 @@ public sealed class DesktopPreLoadManager(
     public List<BasePreLoader> PreLoaders { get; set; } = [];
     public int Priority => 1;
 
-    public async Task OnLoadStart()
+    // ReSharper disable once AsyncVoidMethod
+    public async void OnLoadStart()
     {
         PreLoaders.AddRange(provider.GetServices<BasePreLoader>());
 

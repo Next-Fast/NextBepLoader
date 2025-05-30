@@ -10,6 +10,7 @@ using NextBepLoader.Core.Logging.Extensions;
 using NextBepLoader.Core.Logging.Interface;
 using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.PreLoader.Bootstrap;
+using NextBepLoader.Core.PreLoader.DefaultProviders;
 using NextBepLoader.Core.PreLoader.Event;
 using NextBepLoader.Core.PreLoader.NextPreLoaders;
 using NextBepLoader.Core.Utils;
@@ -60,11 +61,11 @@ public sealed class DesktopLoader : LoaderBase<DesktopLoader>
 
     public override void Start()
     {
-        PlatformUtils.SetDesktopPlatformVersion();
-        RedirectStdErrFix.Apply();
-        
         DesktopPaths.InitPaths(true);
         LoaderVersion = typeof(DesktopLoader).Assembly.GetName().Version ?? new Version(1,0,0);
+        
+        PlatformUtils.SetDesktopPlatformVersion();
+        RedirectStdErrFix.Apply();
         
         LastLogListener = DiskListener.CreateDiskListener(Paths.LastLogPath);
         TimeLogListener = DiskListener.CreateDiskListener(Paths.TimeStampLogPath);

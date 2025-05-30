@@ -1,0 +1,12 @@
+{
+    "Version": "0.2.0",
+    "DotnetVersion": "9.0.3",
+    "UnityDoorstopVersion": "4.3.0",
+    "DobbyVersion": "1.0.5",
+    "Build": {
+        "Desktop": {
+            "Windows-x86": true,
+            "Windows-x64": true
+        }
+    }
+}

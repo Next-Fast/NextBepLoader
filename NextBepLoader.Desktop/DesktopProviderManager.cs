@@ -1,9 +1,11 @@
 using AsmResolver.DotNet;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NextBepLoader.Core.LoaderInterface;
 using NextBepLoader.Core.Logging;
 using NextBepLoader.Core.PreLoader;
 using NextBepLoader.Core.PreLoader.Bootstrap;
+using NextBepLoader.Core.PreLoader.DefaultProviders;
 
 namespace NextBepLoader.Deskstop;
 
@@ -11,21 +13,20 @@ public sealed class DesktopProviderManager(
     StartupLoadProvider startupLoadProvider,
     PluginLoadProvider pluginLoadProvider,
     IServiceProvider serviceProvider,
-    DotNetLoader dotNetLoader) : IProviderManager, IOnLoadStart
+    DotNetLoader dotNetLoader,
+    ILogger<DesktopProviderManager> logger) : IProviderManager, IOnLoadStart
 {
-    public List<IProvider> Providers => ProviderLoader.Providers;
+    public IReadOnlyList<IProvider> Providers => ProviderLoader.Providers;
     private ProviderLoader ProviderLoader { get; } = new(serviceProvider);
     public int Priority => 2;
 
-    public Task OnLoadStart()
+    public void OnLoadStart()
     {
         ProviderLoader.AddProvider(startupLoadProvider)
                       .AddProvider(pluginLoadProvider)
                       .LoadFormTypeLoader(dotNetLoader)
                       .InitAll(this)
                       .RunAll();
-
-        return Task.CompletedTask;
     }
 
     public IServiceProvider MainServiceProvider { get; } = serviceProvider;
@@ -38,9 +39,9 @@ public sealed class DesktopProviderManager(
             {
                 provider.OnGameActive();
             }
-            catch
+            catch(Exception e)
             {
-                // ignored
+                logger.LogError(e, $"OnGameActive {provider.GetType().Name}");
             }
         }
     }
